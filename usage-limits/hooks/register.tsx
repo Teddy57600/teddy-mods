@@ -19,12 +19,17 @@ const DAYS = ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.']
 const two = (n: number): string => String(n).padStart(2, '0')
 
 // « 14h30 » pour la fenêtre de 5 h, « lun. 09h00 » pour la semaine.
-const resetLabel = (resetsAt: string | undefined, withDay: boolean): string => {
+const resetTime = (resetsAt: string | undefined, withDay: boolean): string => {
   if (resetsAt === undefined) return ''
   const d = new Date(resetsAt)
   if (Number.isNaN(d.getTime())) return ''
   const time = `${two(d.getHours())}h${two(d.getMinutes())}`
-  return `↻ ${withDay ? `${DAYS[d.getDay()]} ` : ''}${time}`
+  return `${withDay ? `${DAYS[d.getDay()]} ` : ''}${time}`
+}
+
+const resetLabel = (resetsAt: string | undefined, withDay: boolean): string => {
+  const time = resetTime(resetsAt, withDay)
+  return time && `↻ ${time}`
 }
 
 // Une décimale au plus : 42,857 → « 42,9 », 40 → « 40 ».
@@ -39,11 +44,12 @@ const gauge = (x: number, w: Window, font: string, id: string): string => {
   const trackW = 200
   const fillW = Math.max(8, (trackW * clamped) / 100)
   const value = p === undefined ? '—' : pct(p)
+  const reset = resetTime(w.limit?.resetsAt, w.withDay)
   return `<linearGradient id="${id}" x1="0" y1="0" x2="1" y2="0">
   <stop offset="0" stop-color="${l.light}"/><stop offset="1" stop-color="${l.accent}"/>
 </linearGradient>
 <text x="${x}" y="20" ${font} font-size="9.5" font-weight="700" letter-spacing="2" fill="#D9C8BD">${w.title}</text>
-<text x="${x + trackW}" y="20" ${font} font-size="10" fill="#B8A99F" text-anchor="end">${resetLabel(w.limit?.resetsAt, w.withDay)}</text>
+<text x="${x + trackW}" y="20" ${font} font-size="10.5" font-weight="700" fill="${l.light}" text-anchor="end">${reset && `<tspan font-size="12" font-weight="800" fill="${l.accent}">↻</tspan> ${reset}`}</text>
 <rect x="${x}" y="28" width="${trackW}" height="8" rx="4" fill="url(#ul-track)"/>
 <rect x="${x}" y="28" width="${fillW}" height="8" rx="4" fill="url(#${id})"/>
 <line x1="${x + trackW * 0.85}" y1="24" x2="${x + trackW * 0.85}" y2="40" stroke="#FF4D4D" stroke-width="1.2" stroke-dasharray="3 3"/>
@@ -172,7 +178,7 @@ export const register: Register = on => {
           <Text weight="bold">{name}</Text>{' '}
           <Text color={l.color}>{'█'.repeat(filled) + '░'.repeat(10 - filled)}</Text>{' '}
           <Text>{p === undefined ? '—' : `${pct(p)}%`}</Text>{' '}
-          <Text dimColor>{resetLabel(w.limit?.resetsAt, w.withDay)}</Text>
+          <Text color={l.color}>{resetLabel(w.limit?.resetsAt, w.withDay)}</Text>
         </Text>
       )
     }
