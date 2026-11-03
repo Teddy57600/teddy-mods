@@ -1,0 +1,17 @@
+{
+  "name": "teddy-mods",
+  "owner": { "name": "TeddyIA" },
+  "metadata": { "description": "Bandes au-dessus du prompt : météo du contexte et limites d'usage" },
+  "plugins": [
+    {
+      "name": "context-weather",
+      "source": "./context-weather",
+      "description": "Affiche la météo du contexte (remplissage de la fenêtre) au-dessus du prompt"
+    },
+    {
+      "name": "usage-limits",
+      "source": "./usage-limits",
+      "description": "Affiche les limites d'usage sur 5 heures et sur 7 jours au-dessus du prompt"
+    }
+  ]
+}
