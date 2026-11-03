@@ -47,12 +47,34 @@ Clonez le dépôt, par exemple dans `C:\Users\<login>\.claude\teddy-mods`, puis 
 
 Redémarrez ensuite l'application Claude. Avec cette méthode, une modification des fichiers est prise en compte sans réinstallation.
 
+## Thème
+
+Chaque mod a un réglage `theme` pour sa carte graphique :
+
+- `auto` (par défaut) : la carte suit le thème clair ou sombre de l'affichage, et reste sombre si l'affichage ne l'indique pas.
+- `sombre` : toujours sombre.
+- `clair` : fond crème et textes foncés.
+
+Le réglage se change dans le menu `/config` de Claude Code (une ligne par mod), ou dans `C:\Users\<login>\.claude\settings.json`. Si le fichier contient déjà une clé `pluginConfigs`, ajoutez-y seulement ces lignes :
+
+```json
+{
+  "pluginConfigs": {
+    "context-weather@teddy-mods": { "options": { "theme": "clair" } },
+    "usage-limits@teddy-mods": { "options": { "theme": "clair" } }
+  }
+}
+```
+
+Avec la méthode B, les clés sont `context-weather` et `usage-limits`, sans `@teddy-mods`. Dans le terminal, les bandes restent du texte qui suit déjà le thème du terminal.
+
 ## Personnalisation
 
 Dans `hooks/register.tsx` de chaque mod :
 
 - `BRAND` : le nom affiché à droite de la carte (`TeddyIA`).
-- `forecast` (context-weather) et `level` (usage-limits) : seuils, libellés et couleurs.
+- `forecast` (context-weather) et `level` (usage-limits) : seuils, libellés et couleurs de chaque niveau, en sombre et en clair.
+- `SURFACE` : les couleurs fixes de la carte (fond, textes, jauges), en sombre et en clair.
 
 ## Remarques
 

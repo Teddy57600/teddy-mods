@@ -1,19 +1,51 @@
-import type { Register } from 'claude-code'
+import type { PluginOptions, Register } from 'claude-code'
 
+type Mode = 'sombre' | 'clair'
+type Theme = 'auto' | Mode
+type Tone = { accent: string; soft: string }
 type Sky = 'sun' | 'partly' | 'cloud' | 'rain' | 'storm' | 'fog'
-type Forecast = { sky: Sky; label: string; accent: string; light: string; color: string }
+type Forecast = { sky: Sky; label: string; color: string } & Record<Mode, Tone>
 
 const BRAND = 'TeddyIA'
 
+// Le réglage `theme` du plugin.json : auto (par défaut), sombre ou clair.
+const themeOf = (options: PluginOptions): Theme =>
+  options.theme === 'sombre' || options.theme === 'clair' ? options.theme : 'auto'
+
 // Du ciel dégagé à l'orage : plus le contexte se remplit, plus le temps se gâte.
+// En clair, les mêmes teintes un peu plus foncées pour rester lisibles sur le fond crème.
 const forecast = (percent: number | undefined): Forecast => {
-  if (percent === undefined) return { sky: 'fog', label: 'Brume matinale', accent: '#B8A99F', light: '#E0D4CB', color: 'gray' }
-  if (percent < 25) return { sky: 'sun', label: 'Grand soleil', accent: '#FF7A2F', light: '#FFB27A', color: 'green' }
-  if (percent < 50) return { sky: 'partly', label: 'Éclaircies', accent: '#FF9A3D', light: '#FFC98A', color: 'green' }
-  if (percent < 70) return { sky: 'cloud', label: 'Nuageux', accent: '#E8A84A', light: '#F5D394', color: 'yellow' }
-  if (percent < 85) return { sky: 'rain', label: 'Averses', accent: '#F06A3A', light: '#FFA27E', color: 'yellow' }
-  return { sky: 'storm', label: 'Orage', accent: '#FF3B3B', light: '#FF8A7A', color: 'red' }
+  if (percent === undefined) return { sky: 'fog', label: 'Brume matinale', color: 'gray', sombre: { accent: '#B8A99F', soft: '#E0D4CB' }, clair: { accent: '#8A7A70', soft: '#B0A196' } }
+  if (percent < 25) return { sky: 'sun', label: 'Grand soleil', color: 'green', sombre: { accent: '#FF7A2F', soft: '#FFB27A' }, clair: { accent: '#E0601A', soft: '#F59A5C' } }
+  if (percent < 50) return { sky: 'partly', label: 'Éclaircies', color: 'green', sombre: { accent: '#FF9A3D', soft: '#FFC98A' }, clair: { accent: '#D9781F', soft: '#F0A860' } }
+  if (percent < 70) return { sky: 'cloud', label: 'Nuageux', color: 'yellow', sombre: { accent: '#E8A84A', soft: '#F5D394' }, clair: { accent: '#B8801F', soft: '#D9AE5C' } }
+  if (percent < 85) return { sky: 'rain', label: 'Averses', color: 'yellow', sombre: { accent: '#F06A3A', soft: '#FFA27E' }, clair: { accent: '#D4501F', soft: '#EB8460' } }
+  return { sky: 'storm', label: 'Orage', color: 'red', sombre: { accent: '#FF3B3B', soft: '#FF8A7A' }, clair: { accent: '#D62828', soft: '#EB6A5A' } }
 }
+
+// Les couleurs fixes de la carte, dans chaque mode.
+const SURFACE: Record<Mode, Record<string, string>> = {
+  sombre: {
+    bg0: '#3A2216', bg1: '#24170F', bg2: '#1A120D', title: '#D9C8BD', muted: '#B8A99F', value: '#FFFFFF',
+    track0: '#3B2A22', track1: '#2A1E19', disc: '#1E1410', cloud: '#EDE2DA', cloud2: '#BFB2A8', knob: '#E8D5C8',
+    off: '#4A3A32', mark: '#FFFFFF', limit: '#FF4D4D',
+  },
+  clair: {
+    bg0: '#FFE4D1', bg1: '#FFF1E7', bg2: '#FFF7F1', title: '#7A5A48', muted: '#8A6E5E', value: '#2A1A12',
+    track0: '#EAD6C8', track1: '#F2E3D8', disc: '#FFFFFF', cloud: '#C9B8AC', cloud2: '#A8968A', knob: '#7A5A48',
+    off: '#E6D5C9', mark: '#2A1A12', limit: '#D93030',
+  },
+}
+
+// Les couleurs passent par des variables CSS : en auto, la carte reste sombre et
+// bascule sur le clair quand l'affichage demande un thème clair.
+const palette = (theme: Theme, tones: (mode: Mode) => Record<string, string>): string => {
+  const block = (mode: Mode): string =>
+    `svg{${Object.entries({ ...SURFACE[mode], ...tones(mode) }).map(([k, c]) => `--${k}:${c}`).join(';')}}`
+  return theme === 'auto' ? `${block('sombre')}@media (prefers-color-scheme: light){${block('clair')}}` : block(theme)
+}
+
+const v = (key: string): string => `var(--${key})`
 
 // 850 → « 850 », 62 400 → « 62k », 999 600 et 1 000 000 → « 1M », 1 500 000 → « 1,5M ».
 const kilo = (tokens: number): string => {
@@ -23,11 +55,11 @@ const kilo = (tokens: number): string => {
 }
 
 const cloud = (dx: number, dy: number, fill: string): string =>
-  `<g transform="translate(${dx} ${dy})" fill="${fill}">` +
+  `<g transform="translate(${dx} ${dy})" style="fill:${fill}">` +
   `<circle cx="-8" cy="3" r="7"/><circle cx="2" cy="-3" r="10"/><circle cx="10" cy="4" r="6"/>` +
   `<rect x="-14" y="3" width="30" height="8" rx="4"/></g>`
 
-const sun = (cx: number, cy: number, r: number, accent: string): string => {
+const sun = (cx: number, cy: number, r: number): string => {
   const rays = Array.from({ length: 8 }, (_, i) => {
     const a = (i * Math.PI) / 4
     const x1 = cx + Math.cos(a) * (r + 3)
@@ -36,33 +68,33 @@ const sun = (cx: number, cy: number, r: number, accent: string): string => {
     const y2 = cy + Math.sin(a) * (r + 7)
     return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`
   }).join('')
-  return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${accent}"/><g stroke="${accent}" stroke-width="2.5" stroke-linecap="round">${rays}</g>`
+  return `<circle cx="${cx}" cy="${cy}" r="${r}" style="fill:${v('accent')}"/><g style="stroke:${v('accent')}" stroke-width="2.5" stroke-linecap="round">${rays}</g>`
 }
 
 const glyph = (f: Forecast): string => {
-  const c = '#EDE2DA'
   switch (f.sky) {
     case 'sun':
-      return sun(80, 56, 10, f.accent)
+      return sun(80, 56, 10)
     case 'partly':
-      return sun(74, 50, 8, f.accent) + cloud(84, 60, c)
+      return sun(74, 50, 8) + cloud(84, 60, v('cloud'))
     case 'cloud':
-      return cloud(78, 54, c) + cloud(88, 62, '#BFB2A8')
+      return cloud(78, 54, v('cloud')) + cloud(88, 62, v('cloud2'))
     case 'rain':
-      return cloud(80, 50, c) +
-        `<g stroke="${f.light}" stroke-width="2.5" stroke-linecap="round">` +
+      return cloud(80, 50, v('cloud')) +
+        `<g style="stroke:${v('soft')}" stroke-width="2.5" stroke-linecap="round">` +
         `<line x1="70" y1="66" x2="67" y2="73"/><line x1="80" y1="66" x2="77" y2="73"/><line x1="90" y1="66" x2="87" y2="73"/></g>`
     case 'storm':
-      return cloud(80, 48, '#BFB2A8') +
-        `<path d="M82 60 L74 71 L80 71 L76 81 L88 67 L82 67 L86 60 Z" fill="${f.accent}"/>`
+      return cloud(80, 48, v('cloud2')) +
+        `<path d="M82 60 L74 71 L80 71 L76 81 L88 67 L82 67 L86 60 Z" style="fill:${v('accent')}"/>`
     case 'fog':
-      return `<g stroke="${c}" stroke-width="3" stroke-linecap="round">` +
+      return `<g style="stroke:${v('cloud')}" stroke-width="3" stroke-linecap="round">` +
         `<line x1="66" y1="48" x2="94" y2="48"/><line x1="62" y1="56" x2="90" y2="56"/><line x1="68" y1="64" x2="96" y2="64"/></g>`
   }
 }
 
-const card = (percent: number | undefined, tokens: number | undefined, window: number): string => {
+const card = (percent: number | undefined, tokens: number | undefined, window: number, theme: Theme): string => {
   const f = forecast(percent)
+  const css = palette(theme, m => ({ accent: f[m].accent, soft: f[m].soft }))
   const p = Math.max(0, Math.min(100, percent ?? 0))
   const trackX = 300
   const trackW = 420
@@ -73,7 +105,7 @@ const card = (percent: number | undefined, tokens: number | undefined, window: n
   const bars = Array.from({ length: 5 }, (_, i) => {
     const h = 5 + i * 3
     const isOn = i < lit
-    return `<rect x="${968 + i * 7}" y="${38 - h}" width="4" height="${h}" rx="1" fill="${isOn ? f.accent : '#4A3A32'}" opacity="${isOn ? 0.6 + i * 0.1 : 1}"/>`
+    return `<rect x="${968 + i * 7}" y="${38 - h}" width="4" height="${h}" rx="1" style="fill:${v(isOn ? 'accent' : 'off')}" opacity="${isOn ? 0.6 + i * 0.1 : 1}"/>`
   }).join('')
   const rays = Array.from({ length: 12 }, (_, i) => {
     const a = (i * Math.PI) / 6 + Math.PI / 12
@@ -86,43 +118,46 @@ const card = (percent: number | undefined, tokens: number | undefined, window: n
   const tokenLine = tokens === undefined ? 'en attente de mesure' : `${kilo(tokens)} / ${kilo(window)} jetons`
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="56" viewBox="0 0 1100 56">
+<style>${css}</style>
 <defs>
   <linearGradient id="cw-bg" x1="0" y1="0" x2="1" y2="0">
-    <stop offset="0" stop-color="#3A2216"/><stop offset="0.35" stop-color="#24170F"/><stop offset="1" stop-color="#1A120D"/>
+    <stop offset="0" style="stop-color:${v('bg0')}"/><stop offset="0.35" style="stop-color:${v('bg1')}"/><stop offset="1" style="stop-color:${v('bg2')}"/>
   </linearGradient>
   <radialGradient id="cw-glow" cx="0.03" cy="0.5" r="0.15">
-    <stop offset="0" stop-color="${f.accent}" stop-opacity="0.35"/><stop offset="1" stop-color="${f.accent}" stop-opacity="0"/>
+    <stop offset="0" style="stop-color:${v('accent')};stop-opacity:0.35"/><stop offset="1" style="stop-color:${v('accent')};stop-opacity:0"/>
   </radialGradient>
   <linearGradient id="cw-fill" x1="0" y1="0" x2="1" y2="0">
-    <stop offset="0" stop-color="${f.light}"/><stop offset="1" stop-color="${f.accent}"/>
+    <stop offset="0" style="stop-color:${v('soft')}"/><stop offset="1" style="stop-color:${v('accent')}"/>
   </linearGradient>
   <linearGradient id="cw-title" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0" stop-color="${f.light}"/><stop offset="1" stop-color="${f.accent}"/>
+    <stop offset="0" style="stop-color:${v('soft')}"/><stop offset="1" style="stop-color:${v('accent')}"/>
   </linearGradient>
   <linearGradient id="cw-track" x1="0" y1="0" x2="1" y2="0">
-    <stop offset="0" stop-color="#3B2A22"/><stop offset="1" stop-color="#2A1E19"/>
+    <stop offset="0" style="stop-color:${v('track0')}"/><stop offset="1" style="stop-color:${v('track1')}"/>
   </linearGradient>
 </defs>
-<rect x="1" y="1" width="1098" height="54" rx="12" fill="url(#cw-bg)" stroke="${f.accent}" stroke-opacity="0.35"/>
+<rect x="1" y="1" width="1098" height="54" rx="12" fill="url(#cw-bg)" style="stroke:${v('accent')}" stroke-opacity="0.35"/>
 <rect x="1" y="1" width="1098" height="54" rx="12" fill="url(#cw-glow)"/>
-<g stroke="${f.accent}" stroke-width="1.8" stroke-linecap="round" opacity="0.85">${rays}</g>
-<circle cx="34" cy="28" r="16" fill="#1E1410" stroke="${f.accent}" stroke-width="1.5"/>
+<g style="stroke:${v('accent')}" stroke-width="1.8" stroke-linecap="round" opacity="0.85">${rays}</g>
+<circle cx="34" cy="28" r="16" style="fill:${v('disc')};stroke:${v('accent')}" stroke-width="1.5"/>
 <g transform="translate(34 28) scale(0.55) translate(-80 -56)">${glyph(f)}</g>
-<text x="68" y="22" ${font} font-size="9.5" font-weight="700" letter-spacing="2" fill="#D9C8BD">MÉTÉO DU CONTEXTE</text>
+<text x="68" y="22" ${font} font-size="9.5" font-weight="700" letter-spacing="2" style="fill:${v('title')}">MÉTÉO DU CONTEXTE</text>
 <text x="67" y="43" ${font} font-size="19" font-weight="800" font-style="italic" fill="url(#cw-title)">${f.label}</text>
 <rect x="${trackX}" y="24" width="${trackW}" height="8" rx="4" fill="url(#cw-track)"/>
 <rect x="${trackX}" y="24" width="${fillW}" height="8" rx="4" fill="url(#cw-fill)"/>
-<line x1="${trackX + trackW * 0.5}" y1="19" x2="${trackX + trackW * 0.5}" y2="37" stroke="#FFFFFF" stroke-opacity="0.35" stroke-width="1.2"/>
-<line x1="${trackX + trackW * 0.85}" y1="19" x2="${trackX + trackW * 0.85}" y2="37" stroke="#FF4D4D" stroke-width="1.2" stroke-dasharray="3 3"/>
-<circle cx="${knobX}" cy="28" r="9" fill="#E8D5C8" fill-opacity="0.35" stroke="#E8D5C8" stroke-opacity="0.5"/>
-<text x="750" y="37" ${font} font-size="24" font-weight="800" fill="#FFFFFF">${value}<tspan font-size="14" font-weight="600" dx="4">%</tspan></text>
-<text x="830" y="35" ${font} font-size="12" fill="#B8A99F">${tokenLine}</text>
-<text x="1080" y="34" ${font} font-size="14" font-weight="800" font-style="italic" fill="${f.accent}" text-anchor="end">${BRAND}</text>
+<line x1="${trackX + trackW * 0.5}" y1="19" x2="${trackX + trackW * 0.5}" y2="37" style="stroke:${v('mark')}" stroke-opacity="0.35" stroke-width="1.2"/>
+<line x1="${trackX + trackW * 0.85}" y1="19" x2="${trackX + trackW * 0.85}" y2="37" style="stroke:${v('limit')}" stroke-width="1.2" stroke-dasharray="3 3"/>
+<circle cx="${knobX}" cy="28" r="9" style="fill:${v('knob')};stroke:${v('knob')}" fill-opacity="0.35" stroke-opacity="0.5"/>
+<text x="750" y="37" ${font} font-size="24" font-weight="800" style="fill:${v('value')}">${value}<tspan font-size="14" font-weight="600" dx="4">%</tspan></text>
+<text x="830" y="35" ${font} font-size="12" style="fill:${v('muted')}">${tokenLine}</text>
+<text x="1080" y="34" ${font} font-size="14" font-weight="800" font-style="italic" style="fill:${v('accent')}" text-anchor="end">${BRAND}</text>
 ${bars}
 </svg>`
 }
 
-export const register: Register = on => {
+export const register: Register = (on, options) => {
+  const theme = themeOf(options)
+
   // Redessine la bande dès qu'une réponse a fait évoluer le contexte.
   on('turn.complete', ($, e, next) => {
     $.ui.invalidate('ui.render')
@@ -149,7 +184,7 @@ export const register: Register = on => {
       return (
         <Box flexDirection="column" gap="xs">
           {below}
-          <Svg source={card(context.percent, context.tokens, context.window)} alt={alt} />
+          <Svg source={card(context.percent, context.tokens, context.window, theme)} alt={alt} />
         </Box>
       )
     }
