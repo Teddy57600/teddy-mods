@@ -1,1 +1,18 @@
-{ "name": "usage-limits", "version": "0.1.2", "description": "Affiche les limites d'usage sur 5 heures et sur 7 jours au-dessus du prompt" }
+{
+  "name": "usage-limits",
+  "version": "0.2.0",
+  "description": "Affiche les limites d'usage sur 5 heures et sur 7 jours au-dessus du prompt",
+  "userConfig": {
+    "theme": {
+      "type": "string",
+      "title": "Thème de la carte",
+      "description": "auto suit le thème clair ou sombre de l'affichage, sombre et clair le fixent.",
+      "default": "auto",
+      "options": [
+        "auto",
+        "sombre",
+        "clair"
+      ]
+    }
+  }
+}
