@@ -85,12 +85,33 @@ const chimeBase64 = (): string => {
   return chime
 }
 
+// Lit le WAV reçu en base64 sur l'entrée standard, sans fichier temporaire.
+const POWERSHELL_PLAY =
+  '$b=[Convert]::FromBase64String([Console]::In.ReadToEnd());' +
+  '$p=New-Object System.Media.SoundPlayer (New-Object IO.MemoryStream(,$b));$p.PlaySync()'
+
+// Sous Windows, $.audio.play ne trouve aucun lecteur et se tait : PowerShell
+// joue le carillon. Ailleurs (pas de PowerShell), c'est $.audio.play (afplay sur macOS).
+const playChime = async ($: EngineInterface): Promise<void> => {
+  const base64 = chimeBase64()
+  try {
+    const { exitCode } = await $.process.run(
+      ['powershell', '-NoProfile', '-NonInteractive', '-Command', POWERSHELL_PLAY],
+      { stdin: base64, timeoutMs: 10_000 },
+    )
+    if (exitCode === 0) return
+  } catch {
+    // PowerShell absent : on passe au lecteur du moteur.
+  }
+  await $.audio.play({ base64, mime: 'audio/wav' })
+}
+
 // Chaque canal est tenté seul : l'échec de l'un n'empêche pas les autres.
 const alert = async ($: EngineInterface, text: string, settings: Settings): Promise<void> => {
   $.ui.toast(text, { timeoutMs: 8000 })
   const tries: Promise<unknown>[] = []
   if (settings.hasSound) {
-    tries.push($.audio.play({ base64: chimeBase64(), mime: 'audio/wav' }))
+    tries.push(playChime($))
   }
   if (settings.hasNotification) {
     tries.push($.ui.notify(text, { title: 'Claude Code' }))
