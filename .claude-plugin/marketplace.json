@@ -1,7 +1,7 @@
 {
   "name": "teddy-mods",
   "owner": { "name": "TeddyIA" },
-  "metadata": { "description": "Bandes au-dessus du prompt : météo du contexte et limites d'usage" },
+  "metadata": { "description": "Météo du contexte, limites d'usage et alerte de fin de tour pour Claude Code" },
   "plugins": [
     {
       "name": "context-weather",
@@ -12,6 +12,11 @@
       "name": "usage-limits",
       "source": "./usage-limits",
       "description": "Affiche les limites d'usage sur 5 heures et sur 7 jours au-dessus du prompt"
+    },
+    {
+      "name": "turn-alert",
+      "source": "./turn-alert",
+      "description": "Toast, son et notification quand un tour long de Claude se termine"
     }
   ]
 }
