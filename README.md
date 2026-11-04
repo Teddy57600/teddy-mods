@@ -83,7 +83,7 @@ Par défaut, l'alerte part pour les tours de 60 secondes et plus, ni pour les so
 - `/turn-alert notif off` (ou `on`) : coupe ou remet la notification système
 - `/turn-alert test` : déclenche une alerte d'essai
 
-Les réglages sont conservés d'une session à l'autre. Le toast s'affiche toujours ; le son dépend de la surface (il ne joue pas dans un terminal Windows).
+Les réglages sont conservés d'une session à l'autre. Le toast s'affiche toujours. Sous Windows, le carillon est joué par PowerShell ; ailleurs, par le lecteur audio de Claude Code (`afplay` sur macOS, aucun sous Linux).
 
 ## Personnalisation
 
