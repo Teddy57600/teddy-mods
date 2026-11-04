@@ -37,27 +37,37 @@ const toBase64 = (bytes: Uint8Array): string => {
   return out
 }
 
-// Carillon de deux notes (mi puis la), en WAV 16 bits mono, fabriqué une fois.
+// Carillon de trois notes montantes (mi, la, do dièse), en WAV 16 bits mono, fabriqué une fois.
+// Les harmoniques de cloche et le volume poussé près du maximum le font entendre
+// même sur les petits haut-parleurs d'un portable.
 let chime: string | undefined
 const chimeBase64 = (): string => {
   if (chime !== undefined) return chime
   const rate = 22050
   const notes = [
-    { freq: 659.25, start: 0, length: 0.35 },
-    { freq: 880, start: 0.16, length: 0.6 },
+    { freq: 659.25, start: 0, length: 0.5 },
+    { freq: 880, start: 0.14, length: 0.6 },
+    { freq: 1108.73, start: 0.28, length: 1.1 },
   ]
-  const samples = Math.ceil(rate * 0.8)
+  const samples = Math.ceil(rate * 1.4)
   const pcm = new Float32Array(samples)
   for (const note of notes) {
     const from = Math.floor(note.start * rate)
     const count = Math.floor(note.length * rate)
     for (let i = 0; i < count && from + i < samples; i++) {
       const t = i / rate
-      const attack = Math.min(1, t / 0.01)
-      const decay = Math.exp(-t * 6)
-      const tone = Math.sin(2 * Math.PI * note.freq * t) + 0.3 * Math.sin(4 * Math.PI * note.freq * t)
-      pcm[from + i]! += 0.35 * attack * decay * tone
+      const attack = Math.min(1, t / 0.005)
+      const decay = Math.exp(-t * 3.5)
+      const w = 2 * Math.PI * note.freq * t
+      const tone = Math.sin(w) + 0.5 * Math.sin(2 * w) + 0.25 * Math.exp(-t * 8) * Math.sin(3 * w)
+      pcm[from + i]! += attack * decay * tone
     }
+  }
+  // Ramène le pic au maximum, puis arrondit les crêtes : plus fort à l'oreille, sans grésiller.
+  const peak = pcm.reduce((m, x) => Math.max(m, Math.abs(x)), 0) || 1
+  const drive = 1.8
+  for (let i = 0; i < samples; i++) {
+    pcm[i] = (0.95 * Math.tanh((drive * pcm[i]!) / peak)) / Math.tanh(drive)
   }
   const bytes = new Uint8Array(44 + samples * 2)
   const view = new DataView(bytes.buffer)
