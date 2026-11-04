@@ -1,11 +1,12 @@
 # teddy-mods
 
-Deux mods Claude Code qui ajoutent une bande au-dessus de la zone de prompt :
+Trois mods Claude Code :
 
 - **context-weather** : la « météo » du contexte, c'est-à-dire le remplissage de la fenêtre de contexte (de Grand soleil à Orage).
 - **usage-limits** : les limites d'usage sur 5 heures et sur 7 jours, avec leur heure de réinitialisation.
+- **turn-alert** : un toast, un son et une notification quand un tour long de Claude se termine.
 
-Sur l'application desktop, chaque bande est une carte graphique. Dans le terminal, c'est une ligne de texte. Les mods ne dépendent pas du compte : `usage-limits` affiche les limites du compte connecté.
+`context-weather` et `usage-limits` ajoutent une bande au-dessus de la zone de prompt. Sur l'application desktop, chaque bande est une carte graphique. Dans le terminal, c'est une ligne de texte. Les mods ne dépendent pas du compte : `usage-limits` affiche les limites du compte connecté.
 
 ## Installation
 
@@ -23,15 +24,19 @@ claude plugin install context-weather --marketplace Teddy57600/teddy-mods
 claude plugin install usage-limits --marketplace Teddy57600/teddy-mods
 ```
 
+```bash
+claude plugin install turn-alert --marketplace Teddy57600/teddy-mods
+```
+
 Dans une session Claude Code du terminal, `/plugin install context-weather --marketplace Teddy57600/teddy-mods` fait la même chose : répondez `y` pour ajouter le marketplace, puis choisissez la portée.
 
 Dans l'application desktop : cliquez sur **+** à côté de la zone de prompt, puis **Plugins**, **Add marketplace** avec `Teddy57600/teddy-mods`, puis **Add plugin**.
 
-Pour une mise à jour : augmentez `version` dans le `plugin.json` du mod concerné, poussez la modification sur GitHub, puis lancez `claude plugin update context-weather@teddy-mods` (ou `usage-limits@teddy-mods`).
+Pour une mise à jour : augmentez `version` dans le `plugin.json` du mod concerné, poussez la modification sur GitHub, puis lancez `claude plugin update context-weather@teddy-mods` (ou `usage-limits@teddy-mods`, `turn-alert@teddy-mods`).
 
 Pour désinstaller : `claude plugin uninstall context-weather@teddy-mods`.
 
-N'utilisez pas la méthode B en même temps : chaque bande s'afficherait deux fois.
+N'utilisez pas la méthode B en même temps : chaque bande s'afficherait deux fois, et chaque alerte de fin de tour partirait deux fois.
 
 ### Méthode B : chargement direct des dossiers (développement)
 
@@ -40,7 +45,7 @@ Clonez le dépôt, par exemple dans `C:\Users\<login>\.claude\teddy-mods`, puis 
 ```json
 {
   "env": {
-    "CLAUDE_CODE_PLUGIN_DIRS": "C:\\Users\\<login>\\.claude\\teddy-mods\\context-weather;C:\\Users\\<login>\\.claude\\teddy-mods\\usage-limits"
+    "CLAUDE_CODE_PLUGIN_DIRS": "C:\\Users\\<login>\\.claude\\teddy-mods\\context-weather;C:\\Users\\<login>\\.claude\\teddy-mods\\usage-limits;C:\\Users\\<login>\\.claude\\teddy-mods\\turn-alert"
   }
 }
 ```
@@ -49,7 +54,7 @@ Redémarrez ensuite l'application Claude. Avec cette méthode, une modification 
 
 ## Thème
 
-Chaque mod a un réglage `theme` pour sa carte graphique :
+`context-weather` et `usage-limits` ont chacun un réglage `theme` pour leur carte graphique :
 
 - `auto` (par défaut) : la carte suit le thème clair ou sombre de l'affichage, et reste sombre si l'affichage ne l'indique pas.
 - `sombre` : toujours sombre.
@@ -68,9 +73,21 @@ Le réglage se change dans le menu `/config` de Claude Code (une ligne par mod),
 
 Avec la méthode B, les clés sont `context-weather` et `usage-limits`, sans `@teddy-mods`. Dans le terminal, les bandes restent du texte qui suit déjà le thème du terminal.
 
+## Réglages de turn-alert
+
+Par défaut, l'alerte part pour les tours de 60 secondes et plus, ni pour les sous-agents ni pour un tour que vous avez interrompu. Dans une session :
+
+- `/turn-alert` : affiche les réglages
+- `/turn-alert 30` : alerte dès 30 secondes
+- `/turn-alert son off` (ou `on`) : coupe ou remet le carillon
+- `/turn-alert notif off` (ou `on`) : coupe ou remet la notification système
+- `/turn-alert test` : déclenche une alerte d'essai
+
+Les réglages sont conservés d'une session à l'autre. Le toast s'affiche toujours ; le son dépend de la surface (il ne joue pas dans un terminal Windows).
+
 ## Personnalisation
 
-Dans `hooks/register.tsx` de chaque mod :
+Dans `hooks/register.tsx` des mods à bande :
 
 - `BRAND` : le nom affiché à droite de la carte (`TeddyIA`).
 - `forecast` (context-weather) et `level` (usage-limits) : seuils, libellés et couleurs de chaque niveau, en sombre et en clair.
