@@ -48,13 +48,14 @@ const DAYS = ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.']
 
 const two = (n: number): string => String(n).padStart(2, '0')
 
-// « 14h30 » pour la fenêtre de 5 h, « lun. 09h00 » pour la semaine.
+// « 14h30 » pour la fenêtre de 5 h, « jeu. 12/11 05h00 » pour la semaine : la semaine
+// se réinitialise chaque semaine au même jour et à la même heure, la date dit laquelle.
 const resetTime = (resetsAt: string | undefined, withDay: boolean): string => {
   if (resetsAt === undefined) return ''
   const d = new Date(resetsAt)
   if (Number.isNaN(d.getTime())) return ''
   const time = `${two(d.getHours())}h${two(d.getMinutes())}`
-  return `${withDay ? `${DAYS[d.getDay()]} ` : ''}${time}`
+  return withDay ? `${DAYS[d.getDay()]} ${two(d.getDate())}/${two(d.getMonth() + 1)} ${time}` : time
 }
 
 const resetLabel = (resetsAt: string | undefined, withDay: boolean): string => {
