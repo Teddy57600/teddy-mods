@@ -98,6 +98,22 @@ Les plugins sont installés **machine par machine**. Une session SSH de l'applic
 
    Rouvrez ensuite la session et envoyez-lui un message : l'application relance un processus neuf qui charge les mods, et l'historique est conservé.
 
+### Mise à jour automatique (Linux, macOS, SSH)
+
+`scripts/maj-plugins-claude.sh` rafraîchit toutes les marketplaces, met à jour **chaque plugin installé** et affiche les versions qui ont changé. Il trouve seul la CLI (`claude` dans le `PATH`, sinon celle de `~/.claude/remote/ccd-cli/`). Installation une fois par machine :
+
+```bash
+sudo install -m 755 scripts/maj-plugins-claude.sh /usr/local/bin/maj-plugins-claude
+```
+
+Puis, après chaque nouvelle version poussée sur GitHub :
+
+```bash
+maj-plugins-claude
+```
+
+`maj-plugins-claude -n` montre ce qui serait mis à jour sans rien installer. Une mise à jour n'est détectée que si `version` a augmenté dans le `plugin.json` du mod. Elle s'applique aux nouvelles sessions. Pour les sessions déjà ouvertes, le script liste leurs processus sans les arrêter (voir le point 3 ci-dessus).
+
 ## Thème
 
 `context-weather` et `usage-limits` ont chacun un réglage `theme` pour leur carte graphique :
