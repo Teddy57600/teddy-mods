@@ -52,6 +52,52 @@ Clonez le dépôt, par exemple dans `C:\Users\<login>\.claude\teddy-mods`, puis 
 
 Redémarrez ensuite l'application Claude. Avec cette méthode, une modification des fichiers est prise en compte sans réinstallation.
 
+### Session distante (SSH) ou nouvel environnement
+
+Les plugins sont installés **machine par machine**. Une session SSH de l'application desktop lit `~/.claude` du serveur, pas `C:\Users\<login>\.claude` du poste. Les mods installés sur le poste n'y apparaissent donc pas : `/reload-plugins` n'affiche que les plugins intégrés à l'application. Il faut les installer une fois sur chaque serveur ou nouvel environnement.
+
+1. Sur le poste, relevez ce qui est installé :
+
+   ```powershell
+   Get-Content "$env:USERPROFILE\.claude\plugins\known_marketplaces.json"
+   ```
+
+   ```powershell
+   (Get-Content "$env:USERPROFILE\.claude\settings.json" -Raw | ConvertFrom-Json) | Select-Object enabledPlugins, extraKnownMarketplaces | ConvertTo-Json -Depth 10
+   ```
+
+2. Sur le serveur, la commande `claude` n'est souvent pas dans le `PATH`, mais l'application y dépose sa propre CLI dans `~/.claude/remote/ccd-cli/<version>/` :
+
+   ```bash
+   CLI=$(ls -d ~/.claude/remote/ccd-cli/* | sort -V | tail -1)
+   ```
+
+   ```bash
+   "$CLI" plugin marketplace add Teddy57600/teddy-mods
+   ```
+
+   ```bash
+   for m in context-weather usage-limits turn-alert; do "$CLI" plugin install "$m@teddy-mods"; done
+   ```
+
+   ```bash
+   "$CLI" plugin list
+   ```
+
+   Déclarer seulement les marketplaces et les plugins dans `settings.json` (`extraKnownMarketplaces`, `enabledPlugins`) ne télécharge rien dans une session déjà ouverte. Le serveur doit pouvoir cloner le dépôt (`gh auth login` puis `gh auth setup-git` sur le serveur).
+
+3. **Les nouvelles sessions** chargent les mods. **Une session déjà ouverte** ne les charge qu'en partie avec `/reload-plugins` : `turn-alert` fonctionne, mais les bandes au-dessus du prompt n'apparaissent pas. Il faut relancer le processus de cette session. Relancer l'application desktop ne suffit pas, car les processus du serveur survivent, et le bouton d'arrêt d'une session n'interrompt que le tour en cours. Sur le serveur, terminez le processus d'une session **inactive**, en l'identifiant par son heure de démarrage :
+
+   ```bash
+   ps -eo pid,lstart,args | grep ccd-cli/ | grep -v grep
+   ```
+
+   ```bash
+   kill -TERM <pid>
+   ```
+
+   Rouvrez ensuite la session et envoyez-lui un message : l'application relance un processus neuf qui charge les mods, et l'historique est conservé.
+
 ## Thème
 
 `context-weather` et `usage-limits` ont chacun un réglage `theme` pour leur carte graphique :
