@@ -186,20 +186,31 @@ const wrap = (text: string, max: number): string[] =>
     return lines
   }, [])
 
-const W = 320
-const H = 392
+// La carte prend la largeur du panneau. Le panneau la donne en colonnes de texte :
+// une colonne de la police de code vaut environ 7 px.
+const CELL_PX = 7.2
+const widthOf = (bodyColumns: number | undefined): number =>
+  Math.max(300, Math.min(1000, Math.round((bodyColumns ?? 44) * CELL_PX) - 8))
+
+// Au-delà de cette largeur, les quatre valeurs tiennent sur une ligne.
+const WIDE = 540
 
 const stat = (x: number, y: number, title: string, value: string, sub: string, font: string, color = 'value'): string =>
   `<text x="${x}" y="${y}" ${font} font-size="9" font-weight="700" letter-spacing="1.6" style="fill:${v('title')}">${title}</text>` +
   `<text x="${x}" y="${y + 23}" ${font} font-size="20" font-weight="800" style="fill:${v(color)}">${value}</text>` +
   `<text x="${x}" y="${y + 39}" ${font} font-size="10" style="fill:${v('muted')}">${sub}</text>`
 
-const card = (view: View, theme: Theme): string => {
+// Deux mises en page : étroite (tout en colonne, comme une fiche) et large (en-tête, jauge
+// à côté du grand chiffre, puis les quatre valeurs sur une ligne).
+const card = (view: View, theme: Theme, W: number): string => {
   const { f, l } = view
   const css = palette(theme, l)
   const font = `font-family="Segoe UI, system-ui, -apple-system, sans-serif"`
-  const trackX = 20
-  const trackW = W - 40
+  const isWide = W >= WIDE
+  const H = isWide ? 262 : 392
+  const trackX = isWide ? 176 : 20
+  const trackW = W - 20 - trackX
+  const trackY = isWide ? 100 : 154
   const used = Math.max(0, Math.min(100, f?.used ?? 0))
   const projected = Math.max(used, Math.min(100, f?.projected ?? used))
   const usedW = Math.max(8, (trackW * used) / 100)
@@ -214,6 +225,21 @@ const card = (view: View, theme: Theme): string => {
     const isOn = i < lit
     return `<rect x="${W - 58 + i * 6}" y="${H - 16 - h}" width="3.5" height="${h}" rx="1" style="fill:${v(isOn ? 'accent' : 'off')}" opacity="${isOn ? 0.6 + i * 0.1 : 1}"/>`
   }).join('')
+  // Les quatre valeurs : une ligne de quatre en large, deux lignes de deux en étroit.
+  const colW = (W - 40) / (isWide ? 4 : 2)
+  const stats = [
+    ['RYTHME', view.rate, view.rateSub, 'value'],
+    ['RESET DANS', view.resetIn, view.resetSub, 'value'],
+    ['MARGE', view.margin, view.marginSub, 'value'],
+    ['LIMITE DANS', view.limitIn, view.limitSub, limitBefore ? 'limit' : 'value'],
+  ].map(([title, value, sub, color], i) => {
+    const x = 20 + (isWide ? i : i % 2) * colW
+    const y = isWide ? 170 : 210 + Math.floor(i / 2) * 56
+    return stat(x, y, title!, value!, sub!, font, color)
+  }).join('\n')
+  const verdictY = isWide ? H - 18 : 338
+  const verdictChars = Math.floor((isWide ? W - 200 : W - 40) / 6)
+  const usedBlockY = isWide ? 22 : 104
   const rays = Array.from({ length: 12 }, (_, i) => {
     const a = (i * Math.PI) / 6 + Math.PI / 12
     const r2 = i % 2 ? 21.5 : 23
@@ -252,27 +278,24 @@ const card = (view: View, theme: Theme): string => {
 <text x="66" y="26" ${font} font-size="9.5" font-weight="700" letter-spacing="2" style="fill:${v('title')}">${view.stale ? 'DERNIÈRE MESURE' : 'PRÉVISION HEBDO'}</text>
 <text x="65" y="47" ${font} font-size="19" font-weight="800" font-style="italic" fill="url(#uf-title)">${l.label}</text>
 
-<text x="${trackX}" y="88" ${font} font-size="44" font-weight="800" style="fill:${v('value')}" dominant-baseline="hanging">${big}${f === undefined ? '' : '<tspan font-size="20" font-weight="600" dx="4">%</tspan>'}</text>
-<text x="${trackX + 2}" y="142" ${font} font-size="10.5" style="fill:${v('muted')}">${bigCaption}</text>
-<text x="${W - 20}" y="104" ${font} font-size="9" font-weight="700" letter-spacing="1.6" style="fill:${v('title')}" text-anchor="end">UTILISÉ</text>
-<text x="${W - 20}" y="126" ${font} font-size="20" font-weight="800" style="fill:${v('accent')}" text-anchor="end">${f === undefined ? '—' : `${num(f.used)} %`}</text>
-<text x="${W - 20}" y="142" ${font} font-size="10.5" font-weight="700" style="fill:${v('accent')}" text-anchor="end">${view.resetLine}</text>
+<text x="20" y="${isWide ? 74 : 88}" ${font} font-size="44" font-weight="800" style="fill:${v('value')}" dominant-baseline="hanging">${big}${f === undefined ? '' : '<tspan font-size="20" font-weight="600" dx="4">%</tspan>'}</text>
+<text x="22" y="${isWide ? 128 : 142}" ${font} font-size="10.5" style="fill:${v('muted')}">${bigCaption}</text>
+<text x="${W - 20}" y="${usedBlockY}" ${font} font-size="9" font-weight="700" letter-spacing="1.6" style="fill:${v('title')}" text-anchor="end">UTILISÉ</text>
+<text x="${W - 20}" y="${usedBlockY + 22}" ${font} font-size="20" font-weight="800" style="fill:${v('accent')}" text-anchor="end">${f === undefined ? '—' : `${num(f.used)} %`}</text>
+<text x="${W - 20}" y="${usedBlockY + 38}" ${font} font-size="10.5" font-weight="700" style="fill:${v('accent')}" text-anchor="end">${view.resetLine}</text>
 
-<rect x="${trackX}" y="154" width="${trackW}" height="10" rx="5" fill="url(#uf-track)"/>
-${f?.projected === undefined ? '' : `<rect x="${trackX}" y="154" width="${projW}" height="10" rx="5" fill="url(#uf-hatch)"/>`}
-<rect x="${trackX}" y="154" width="${usedW}" height="10" rx="5" fill="url(#uf-fill)"/>
-${overflow ? `<rect x="${trackX + trackW - 4}" y="151" width="4" height="16" rx="2" style="fill:${v('limit')}"/>` : ''}
-<circle cx="${trackX + usedW}" cy="159" r="8" style="fill:${v('knob')};stroke:${v('knob')}" fill-opacity="0.35" stroke-opacity="0.5"/>
-<text x="${trackX}" y="179" ${font} font-size="9.5" style="fill:${v('muted')}">0 %</text>
-<text x="${trackX + trackW}" y="179" ${font} font-size="9.5" style="fill:${v('muted')}" text-anchor="end">limite 100 %</text>
+<rect x="${trackX}" y="${trackY}" width="${trackW}" height="10" rx="5" fill="url(#uf-track)"/>
+${f?.projected === undefined ? '' : `<rect x="${trackX}" y="${trackY}" width="${projW}" height="10" rx="5" fill="url(#uf-hatch)"/>`}
+<rect x="${trackX}" y="${trackY}" width="${usedW}" height="10" rx="5" fill="url(#uf-fill)"/>
+${overflow ? `<rect x="${trackX + trackW - 4}" y="${trackY - 3}" width="4" height="16" rx="2" style="fill:${v('limit')}"/>` : ''}
+<circle cx="${trackX + usedW}" cy="${trackY + 5}" r="8" style="fill:${v('knob')};stroke:${v('knob')}" fill-opacity="0.35" stroke-opacity="0.5"/>
+<text x="${trackX}" y="${trackY + 25}" ${font} font-size="9.5" style="fill:${v('muted')}">0 %</text>
+<text x="${trackX + trackW}" y="${trackY + 25}" ${font} font-size="9.5" style="fill:${v('muted')}" text-anchor="end">limite 100 %</text>
 
-<line x1="20" y1="192" x2="${W - 20}" y2="192" style="stroke:${v('rule')}"/>
-${stat(20, 210, 'RYTHME', view.rate, view.rateSub, font)}
-${stat(172, 210, 'RESET DANS', view.resetIn, view.resetSub, font)}
-${stat(20, 266, 'MARGE', view.margin, view.marginSub, font)}
-${stat(172, 266, 'LIMITE DANS', view.limitIn, view.limitSub, font, limitBefore ? 'limit' : 'value')}
-<line x1="20" y1="320" x2="${W - 20}" y2="320" style="stroke:${v('rule')}"/>
-<text x="20" y="338" ${font} font-size="11" font-weight="600" style="fill:${v('accent')}">${wrap(view.verdict, 46).map((line, i) => `<tspan x="20" dy="${i === 0 ? 0 : 14}">${line}</tspan>`).join('')}</text>
+<line x1="20" y1="${isWide ? 150 : 192}" x2="${W - 20}" y2="${isWide ? 150 : 192}" style="stroke:${v('rule')}"/>
+${stats}
+<line x1="20" y1="${isWide ? 226 : 320}" x2="${W - 20}" y2="${isWide ? 226 : 320}" style="stroke:${v('rule')}"/>
+<text x="20" y="${verdictY}" ${font} font-size="11" font-weight="600" style="fill:${v('accent')}">${wrap(view.verdict, verdictChars).map((line, i) => `<tspan x="20" dy="${i === 0 ? 0 : 14}">${line}</tspan>`).join('')}</text>
 <text x="${W - 66}" y="${H - 14}" ${font} font-size="13" font-weight="800" font-style="italic" style="fill:${v('accent')}" text-anchor="end">${BRAND}</text>
 ${bars}
 </svg>`
@@ -332,7 +355,7 @@ export const register: Register = (on, options) => {
     // terminal connaît aussi `Svg` mais ne le dessine pas : on teste la surface.
     if (e.surface !== 'terminal' && 'Svg' in table) {
       const { Svg } = table
-      return <Svg source={card(view, theme)} alt={alt} />
+      return <Svg source={card(view, theme, widthOf(e.props.bodyColumns))} alt={alt} />
     }
 
     // Terminal : quelques lignes de texte.

@@ -60,12 +60,13 @@ test('sans mesure dans la session, il reprend la dernière mesure enregistrée',
   await ui.unmount()
 })
 
-test('sur le desktop, le panneau est une carte SVG', async ($, on) => {
+test('sur le desktop, le panneau est une carte SVG à sa largeur', async ($, on) => {
   on('clock.now', () => ({ value: NOW }))
   on('session.usage', () => usage([week(40, 80)]))
 
-  const ui = await $.ui.mount({ ...PANE, surface: 'desktop' })
-
-  expect(await ui.find({ type: 'Svg' })).toBeDefined()
-  await ui.unmount()
+  for (const [bodyColumns, width] of [[40, 300], [90, 640]] as const) {
+    const ui = await $.ui.mount({ ...PANE, props: { ...PANE.props, bodyColumns }, surface: 'desktop' })
+    expect(JSON.stringify(await ui.drawn())).toContain(`width=\\"${width}\\"`)
+    await ui.unmount()
+  }
 })

@@ -152,7 +152,7 @@ Le panneau prolonge le rythme moyen de la semaine jusqu'à la remise à zéro de
 - **marge** : combien de fois plus vite il faudrait consommer pour atteindre la limite avant le reset (sous ×1, la limite arrive avant) ;
 - **limite dans** : quand la limite serait atteinte au rythme actuel, en rouge si c'est avant le reset.
 
-Le panneau s'ouvre à chaque session, à droite de la conversation quand la place le permet. S'il a été fermé, `/usage-forecast` le rouvre. La prévision suppose un rythme régulier : dans les trois premières heures de la semaine, elle attend d'avoir assez de recul.
+La carte prend la largeur du panneau : en fiche verticale quand il est étroit, sur une ligne de quatre valeurs quand il est large. Le panneau s'ouvre à chaque session, à droite de la conversation quand la place le permet. S'il a été fermé, `/usage-forecast` le rouvre. La prévision suppose un rythme régulier : dans les trois premières heures de la semaine, elle attend d'avoir assez de recul.
 
 ## Réglages de turn-alert
 
