@@ -9,6 +9,8 @@ Quatre mods Claude Code :
 
 `context-weather` et `usage-limits` ajoutent une bande au-dessus de la zone de prompt. `usage-forecast` ouvre un panneau à droite de la conversation, pour ne pas prendre de place en dessous. Sur l'application desktop, chaque bande et le panneau sont des cartes graphiques. Dans le terminal, ce sont des lignes de texte. Les mods ne dépendent pas du compte : ils affichent les limites du compte connecté.
 
+Pour créer vos propres mods, voir le guide de deux pages [docs/guide-mods-claude-code.pdf](docs/guide-mods-claude-code.pdf) : ce qu'un mod peut faire, où il agit à l'écran, comment l'écrire, le tester et le partager. Sa source modifiable est [docs/guide-mods-claude-code.html](docs/guide-mods-claude-code.html) (impression en PDF depuis un navigateur, format A4).
+
 ## Installation
 
 Le dépôt est privé : le compte GitHub doit y avoir accès, et l'ordinateur doit déjà pouvoir se connecter à GitHub avec git (clé SSH, ou `gh auth login` puis `gh auth setup-git`). L'installation ne demande pas d'identifiants.
