@@ -1,12 +1,13 @@
 # teddy-mods
 
-Trois mods Claude Code :
+Quatre mods Claude Code :
 
 - **context-weather** : la « météo » du contexte, c'est-à-dire le remplissage de la fenêtre de contexte (de Grand soleil à Orage).
 - **usage-limits** : les limites d'usage sur 5 heures et sur 7 jours, avec leur heure de réinitialisation.
+- **usage-forecast** : la prévision de la limite des 7 jours (rythme, pourcentage prévu au reset, marge), dans un panneau latéral.
 - **turn-alert** : un toast, un son et une notification quand un tour long de Claude se termine.
 
-`context-weather` et `usage-limits` ajoutent une bande au-dessus de la zone de prompt. Sur l'application desktop, chaque bande est une carte graphique. Dans le terminal, c'est une ligne de texte. Les mods ne dépendent pas du compte : `usage-limits` affiche les limites du compte connecté.
+`context-weather` et `usage-limits` ajoutent une bande au-dessus de la zone de prompt. `usage-forecast` ouvre un panneau à droite de la conversation, pour ne pas prendre de place en dessous. Sur l'application desktop, chaque bande et le panneau sont des cartes graphiques. Dans le terminal, ce sont des lignes de texte. Les mods ne dépendent pas du compte : ils affichent les limites du compte connecté.
 
 ## Installation
 
@@ -25,6 +26,10 @@ claude plugin install usage-limits --marketplace Teddy57600/teddy-mods
 ```
 
 ```bash
+claude plugin install usage-forecast --marketplace Teddy57600/teddy-mods
+```
+
+```bash
 claude plugin install turn-alert --marketplace Teddy57600/teddy-mods
 ```
 
@@ -32,7 +37,7 @@ Dans une session Claude Code du terminal, `/plugin install context-weather --mar
 
 Dans l'application desktop : cliquez sur **+** à côté de la zone de prompt, puis **Plugins**, **Add marketplace** avec `Teddy57600/teddy-mods`, puis **Add plugin**.
 
-Pour une mise à jour : augmentez `version` dans le `plugin.json` du mod concerné, poussez la modification sur GitHub, puis lancez `claude plugin update context-weather@teddy-mods` (ou `usage-limits@teddy-mods`, `turn-alert@teddy-mods`).
+Pour une mise à jour : augmentez `version` dans le `plugin.json` du mod concerné, poussez la modification sur GitHub, puis lancez `claude plugin update context-weather@teddy-mods` (ou `usage-limits@teddy-mods`, `usage-forecast@teddy-mods`, `turn-alert@teddy-mods`).
 
 Pour désinstaller : `claude plugin uninstall context-weather@teddy-mods`.
 
@@ -45,7 +50,7 @@ Clonez le dépôt, par exemple dans `C:\Users\<login>\.claude\teddy-mods`, puis 
 ```json
 {
   "env": {
-    "CLAUDE_CODE_PLUGIN_DIRS": "C:\\Users\\<login>\\.claude\\teddy-mods\\context-weather;C:\\Users\\<login>\\.claude\\teddy-mods\\usage-limits;C:\\Users\\<login>\\.claude\\teddy-mods\\turn-alert"
+    "CLAUDE_CODE_PLUGIN_DIRS": "C:\\Users\\<login>\\.claude\\teddy-mods\\context-weather;C:\\Users\\<login>\\.claude\\teddy-mods\\usage-limits;C:\\Users\\<login>\\.claude\\teddy-mods\\usage-forecast;C:\\Users\\<login>\\.claude\\teddy-mods\\turn-alert"
   }
 }
 ```
@@ -77,7 +82,7 @@ Les plugins sont installés **machine par machine**. Une session SSH de l'applic
    ```
 
    ```bash
-   for m in context-weather usage-limits turn-alert; do "$CLI" plugin install "$m@teddy-mods"; done
+   for m in context-weather usage-limits usage-forecast turn-alert; do "$CLI" plugin install "$m@teddy-mods"; done
    ```
 
    ```bash
@@ -116,7 +121,7 @@ maj-plugins-claude
 
 ## Thème
 
-`context-weather` et `usage-limits` ont chacun un réglage `theme` pour leur carte graphique :
+`context-weather`, `usage-limits` et `usage-forecast` ont chacun un réglage `theme` pour leur carte graphique :
 
 - `auto` (par défaut) : la carte suit le thème clair ou sombre de l'affichage, et reste sombre si l'affichage ne l'indique pas.
 - `sombre` : toujours sombre.
@@ -128,12 +133,26 @@ Le réglage se change dans le menu `/config` de Claude Code (une ligne par mod),
 {
   "pluginConfigs": {
     "context-weather@teddy-mods": { "options": { "theme": "clair" } },
-    "usage-limits@teddy-mods": { "options": { "theme": "clair" } }
+    "usage-limits@teddy-mods": { "options": { "theme": "clair" } },
+    "usage-forecast@teddy-mods": { "options": { "theme": "clair" } }
   }
 }
 ```
 
-Avec la méthode B, les clés sont `context-weather` et `usage-limits`, sans `@teddy-mods`. Dans le terminal, les bandes restent du texte qui suit déjà le thème du terminal.
+Avec la méthode B, les clés sont les noms des mods, sans `@teddy-mods`. Dans le terminal, les bandes restent du texte qui suit déjà le thème du terminal.
+
+## Prévision hebdo (usage-forecast)
+
+Le panneau prolonge le rythme moyen de la semaine jusqu'à la remise à zéro de la limite des 7 jours :
+
+- **en tête** : le verdict (Large marge, Confortable, À surveiller, Juste, Limite avant le reset) et le pourcentage prévu au reset ;
+- **la jauge** : la part utilisée, puis en hachures la part prévue d'ici le reset, avec la date du reset ;
+- **rythme** : la consommation moyenne par jour et par heure depuis le début de la semaine ;
+- **reset dans** : le temps restant avant la remise à zéro, et le temps écoulé ;
+- **marge** : combien de fois plus vite il faudrait consommer pour atteindre la limite avant le reset (sous ×1, la limite arrive avant) ;
+- **limite dans** : quand la limite serait atteinte au rythme actuel, en rouge si c'est avant le reset.
+
+Le panneau s'ouvre à chaque session, à droite de la conversation quand la place le permet. S'il a été fermé, `/usage-forecast` le rouvre. La prévision suppose un rythme régulier : dans les trois premières heures de la semaine, elle attend d'avoir assez de recul.
 
 ## Réglages de turn-alert
 
@@ -149,10 +168,10 @@ Les réglages sont conservés d'une session à l'autre. Le toast s'affiche toujo
 
 ## Personnalisation
 
-Dans `hooks/register.tsx` des mods à bande :
+Dans `hooks/register.tsx` des mods à carte (bandes et panneau) :
 
 - `BRAND` : le nom affiché à droite de la carte (`TeddyIA`).
-- `forecast` (context-weather) et `level` (usage-limits) : seuils, libellés et couleurs de chaque niveau, en sombre et en clair.
+- `forecast` (context-weather), `level` (usage-limits) et `levelOf` (usage-forecast) : seuils, libellés et couleurs de chaque niveau, en sombre et en clair.
 - `SURFACE` : les couleurs fixes de la carte (fond, textes, jauges), en sombre et en clair.
 
 ## Remarques

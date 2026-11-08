@@ -1,7 +1,7 @@
 {
   "name": "teddy-mods",
   "owner": { "name": "TeddyIA" },
-  "metadata": { "description": "Météo du contexte, limites d'usage et alerte de fin de tour pour Claude Code" },
+  "metadata": { "description": "Météo du contexte, limites d'usage, prévision hebdo et alerte de fin de tour pour Claude Code" },
   "plugins": [
     {
       "name": "context-weather",
@@ -12,6 +12,11 @@
       "name": "usage-limits",
       "source": "./usage-limits",
       "description": "Affiche les limites d'usage sur 5 heures et sur 7 jours au-dessus du prompt"
+    },
+    {
+      "name": "usage-forecast",
+      "source": "./usage-forecast",
+      "description": "Prévoit dans un panneau latéral où en sera la limite des 7 jours à sa remise à zéro"
     },
     {
       "name": "turn-alert",

@@ -197,8 +197,9 @@ export const register: Register = (on, options) => {
     // Les autres bandes (un autre mod) restent au-dessus de la nôtre.
     const below = await next(e)
 
-    // Desktop, VS Code, mobile : la carte en SVG.
-    if ('Svg' in table) {
+    // Desktop, VS Code, mobile : la carte en SVG. La table du terminal connaît aussi
+    // `Svg` mais ne le dessine pas : on teste la surface.
+    if (e.surface !== 'terminal' && 'Svg' in table) {
       const { Box, Svg } = table
       return (
         <Box flexDirection="column" gap="xs">
