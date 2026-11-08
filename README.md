@@ -9,7 +9,9 @@ Quatre mods Claude Code :
 
 `context-weather` et `usage-limits` ajoutent une bande au-dessus de la zone de prompt. `usage-forecast` ouvre un panneau à droite de la conversation, pour ne pas prendre de place en dessous. Sur l'application desktop, chaque bande et le panneau sont des cartes graphiques. Dans le terminal, ce sont des lignes de texte. Les mods ne dépendent pas du compte : ils affichent les limites du compte connecté.
 
-Pour créer vos propres mods, voir le guide de deux pages [docs/guide-mods-claude-code.pdf](docs/guide-mods-claude-code.pdf) : ce qu'un mod peut faire, où il agit à l'écran, comment l'écrire, le tester et le partager. Sa source modifiable est [docs/guide-mods-claude-code.html](docs/guide-mods-claude-code.html) (impression en PDF depuis un navigateur, format A4).
+Pour créer vos propres mods sans connaître le système, voir le **guide complet** [docs/guide-complet-mods-claude-code.pdf](docs/guide-complet-mods-claude-code.pdf) (source [.html](docs/guide-complet-mods-claude-code.html)) : installation, premier mod pas à pas, événements, affichage, données, réglages, tests, débogage, publication, pièges et aide-mémoire.
+
+Pour l'essentiel en bref, voir le guide de deux pages [docs/guide-mods-claude-code.pdf](docs/guide-mods-claude-code.pdf) : ce qu'un mod peut faire, où il agit à l'écran, comment l'écrire, le tester et le partager. Sa source modifiable est [docs/guide-mods-claude-code.html](docs/guide-mods-claude-code.html) (impression en PDF depuis un navigateur, format A4).
 
 ## Installation
 

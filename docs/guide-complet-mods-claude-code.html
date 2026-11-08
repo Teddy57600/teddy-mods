@@ -1,0 +1,1093 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Guide complet des mods Claude Code</title>
+<style>
+  @page { size: A4; margin: 16mm 16mm 15mm 16mm; }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", system-ui, sans-serif; font-size: 10pt; line-height: 1.45; color: #2A1A12; margin: 0; }
+  h1 { font-size: 26pt; margin: 0; color: #3A2216; letter-spacing: -0.4pt; line-height: 1.15; }
+  h2 { font-size: 15pt; margin: 0 0 6pt; color: #C2541A; border-bottom: 1.5px solid #F0D9C8; padding-bottom: 3pt; page-break-before: always; page-break-after: avoid; }
+  h2 .n { display: inline-block; min-width: 20pt; height: 20pt; line-height: 20pt; text-align: center; border-radius: 10pt; background: #E0601A; color: #fff; font-size: 11pt; margin-right: 7pt; vertical-align: 2pt; padding: 0 4pt; }
+  h3 { font-size: 11.5pt; margin: 12pt 0 3pt; color: #3A2216; page-break-after: avoid; }
+  h4 { font-size: 10pt; margin: 8pt 0 2pt; color: #7A3A12; page-break-after: avoid; }
+  p { margin: 3pt 0 6pt; }
+  ul, ol { margin: 3pt 0 6pt; padding-left: 16pt; }
+  li { margin: 2pt 0; }
+  code { font-family: Consolas, "Cascadia Mono", monospace; font-size: 9pt; background: #FBEFE6; color: #7A3A12; padding: 0 2.5pt; border-radius: 2pt; }
+  pre { font-family: Consolas, "Cascadia Mono", monospace; font-size: 8.6pt; line-height: 1.38; background: #2A1E19; color: #F2E3D8; padding: 7pt 9pt; border-radius: 5pt; margin: 4pt 0 8pt; white-space: pre-wrap; page-break-inside: avoid; }
+  pre .c { color: #B8A99F; }
+  pre .k { color: #FFB27A; }
+  pre .s { color: #A8D8B0; }
+  pre .t { color: #9EC9F0; }
+  pre.sh { background: #1E2420; color: #DDEBDD; }
+  pre.sh .c { color: #8FA593; }
+  table { border-collapse: collapse; width: 100%; margin: 4pt 0 8pt; font-size: 9.2pt; page-break-inside: avoid; }
+  th { text-align: left; background: #FFF1E7; color: #7A5A48; font-weight: 600; padding: 3.5pt 6pt; border-bottom: 1px solid #EAD6C8; }
+  td { padding: 3pt 6pt; border-bottom: 1px solid #F2E3D8; vertical-align: top; }
+  td:first-child { white-space: nowrap; }
+  table.wrap td:first-child { white-space: normal; width: 50%; }
+  .fig { margin: 4pt 0 8pt; page-break-inside: avoid; }
+  .fig svg { width: 100%; height: auto; display: block; }
+  .cap { font-size: 8.6pt; color: #8A6E5E; margin: 2pt 0 8pt; text-align: center; }
+  .box { border-radius: 4pt; padding: 5pt 9pt; margin: 6pt 0 8pt; page-break-inside: avoid; }
+  .tip { background: #FFF7F1; border-left: 3px solid #E0601A; }
+  .tip b:first-child { color: #C2541A; }
+  .warn { background: #FFF4F2; border-left: 3px solid #C0392B; }
+  .warn b:first-child { color: #A93226; }
+  .info { background: #F2F6FB; border-left: 3px solid #3A6EA5; }
+  .info b:first-child { color: #2C5A8A; }
+  .cols { display: flex; gap: 12pt; }
+  .cols > div { flex: 1; min-width: 0; }
+  /* Couverture */
+  .cover { height: 255mm; display: flex; flex-direction: column; justify-content: center; }
+  .cover .tag { font-size: 10pt; color: #E0601A; font-weight: 600; letter-spacing: 1.5pt; text-transform: uppercase; }
+  .cover .lead { font-size: 13pt; color: #7A5A48; margin: 10pt 0 22pt; max-width: 145mm; }
+  .cover .meta { font-size: 9.5pt; color: #8A6E5E; margin-top: 26pt; }
+  .cover ul { font-size: 10.5pt; }
+  /* Sommaire */
+  .toc { columns: 2; column-gap: 18pt; font-size: 10pt; padding: 0; list-style: none; }
+  .toc li { margin: 3pt 0; break-inside: avoid; }
+  .toc a { color: #2A1A12; text-decoration: none; }
+  .toc .n { display: inline-block; width: 18pt; color: #E0601A; font-weight: 700; }
+  .toc .sub { color: #8A6E5E; font-size: 8.8pt; padding-left: 18pt; display: block; }
+  a { color: #C2541A; }
+  .step { counter-increment: step; }
+  .foot { color: #8A6E5E; font-size: 8.4pt; margin-top: 14pt; border-top: 1px solid #F0D9C8; padding-top: 4pt; }
+  dl { margin: 3pt 0 6pt; }
+  dt { font-weight: 600; margin-top: 5pt; }
+  dd { margin: 0 0 0 14pt; }
+</style>
+</head>
+<body>
+
+<!-- ============================================================ COUVERTURE -->
+<div class="cover">
+  <div class="tag">Guide du développeur</div>
+  <h1>Créer des mods<br>pour Claude Code</h1>
+  <p class="lead">Un guide complet, du premier « bonjour » jusqu'à la publication sur GitHub. Pour tout développeur qui connaît un peu TypeScript, sans connaissance préalable du système de mods.</p>
+  <ul>
+    <li>Comprendre ce qu'est un mod et comment le moteur l'appelle</li>
+    <li>Écrire, charger et recharger un premier mod en dix minutes</li>
+    <li>Dessiner une bande, un panneau, des boutons ; réagir aux événements</li>
+    <li>Garder des données, ajouter des réglages, piloter Claude</li>
+    <li>Tester, déboguer, publier et mettre à jour</li>
+  </ul>
+  <p class="meta">Rédigé à partir de Claude Code 2.1.317 et des mods du dépôt <b>Teddy57600/teddy-mods</b> (context-weather, usage-limits, usage-forecast, turn-alert). Novembre 2026.<br>L'API des mods est en accès anticipé : elle peut changer d'une version à l'autre. La référence qui fait foi est le fichier de types fourni par votre propre version (chapitre 16).</p>
+</div>
+
+<!-- ============================================================ SOMMAIRE -->
+<h2 style="border:none"><span class="n" style="background:#7A5A48">≡</span>Sommaire</h2>
+<ol class="toc">
+  <li><a href="#c1"><span class="n">1</span>Qu'est-ce qu'un mod ?</a><span class="sub">mods, plugins, ce qu'on peut faire</span></li>
+  <li><a href="#c2"><span class="n">2</span>Ce qu'il faut installer</a><span class="sub">Claude Code, éditeur, TypeScript</span></li>
+  <li><a href="#c3"><span class="n">3</span>Votre premier mod en 10 minutes</a><span class="sub">trois fichiers, valider, charger</span></li>
+  <li><a href="#c4"><span class="n">4</span>Les concepts essentiels</a><span class="sub">événements, hooks, <code>$</code>, <code>e</code>, <code>next</code></span></li>
+  <li><a href="#c5"><span class="n">5</span>Anatomie d'un mod</a><span class="sub">plugin.json, hooks.json, register.tsx</span></li>
+  <li><a href="#c6"><span class="n">6</span>Les événements</a><span class="sub">cycle d'une session et d'un tour</span></li>
+  <li><a href="#c7"><span class="n">7</span>Afficher quelque chose</a><span class="sub">toasts, bandes, panneaux, boutons</span></li>
+  <li><a href="#c8"><span class="n">8</span>Garder des données</a><span class="sub">variables, <code>$.state</code>, <code>$.store</code></span></li>
+  <li><a href="#c9"><span class="n">9</span>Agir sur Claude</a><span class="sub">prompts, consignes, outils, garde-fous</span></li>
+  <li><a href="#c10"><span class="n">10</span>Commandes, minuteries, système</a><span class="sub"><code>/commande</code>, fichiers, réseau, son</span></li>
+  <li><a href="#c11"><span class="n">11</span>Les réglages utilisateur</a><span class="sub"><code>userConfig</code> et <code>/config</code></span></li>
+  <li><a href="#c12"><span class="n">12</span>Tester son mod</a><span class="sub">validate, tests automatiques, tsc</span></li>
+  <li><a href="#c13"><span class="n">13</span>Déboguer</a><span class="sub">messages d'erreur, journal, budget</span></li>
+  <li><a href="#c14"><span class="n">14</span>Publier et mettre à jour</a><span class="sub">marketplace GitHub, versions</span></li>
+  <li><a href="#c15"><span class="n">15</span>Pièges et bonnes pratiques</a><span class="sub">ce que l'expérience a appris</span></li>
+  <li><a href="#c16"><span class="n">16</span>Aide-mémoire et références</a><span class="sub">tableaux récapitulatifs, glossaire</span></li>
+</ol>
+
+<div class="box info"><b>Comment lire ce guide.</b> Les chapitres 1 à 4 se lisent dans l'ordre : ils posent les bases. Ensuite, chaque chapitre répond à une question (« comment afficher… », « comment garder… ») et peut être lu seul. Les exemples de code sont complets et se chargent tels quels.</div>
+
+<div class="box tip"><b>Conventions.</b> Les blocs sombres contiennent du code TypeScript ; les blocs verts, des commandes à taper dans un terminal. <code>mon-mod</code> désigne le dossier (et le nom) de votre mod. Les chemins sont écrits avec <code>/</code> ; sous Windows, <code>~</code> désigne <code>C:\Users\&lt;vous&gt;</code>.</div>
+
+<!-- ============================================================ 1 -->
+<h2 id="c1"><span class="n">1</span>Qu'est-ce qu'un mod ?</h2>
+
+<p><b>Claude Code</b> est l'assistant de programmation d'Anthropic. Il fonctionne dans un terminal (la commande <code>claude</code>), dans l'application de bureau Claude (onglet Code), dans VS Code et sur mobile. Partout, c'est le même <b>moteur</b> qui tourne : il reçoit vos messages, appelle le modèle, exécute les outils (lire un fichier, lancer une commande…) et dessine l'interface.</p>
+
+<p>Un <b>mod</b> est un petit programme TypeScript que ce moteur charge et qu'il appelle à des moments précis : quand il dessine une zone de l'écran, quand vous envoyez un message, quand Claude veut lancer une commande, quand un tour de réponse se termine… À chacun de ces moments, votre code peut <b>observer</b>, <b>modifier</b>, <b>bloquer</b> ou <b>remplacer</b> ce que le moteur allait faire.</p>
+
+<h3>Mod ou plugin ?</h3>
+<p>Techniquement, un mod est un <b>plugin</b> Claude Code. Les plugins peuvent contenir plusieurs choses : des <i>skills</i> (instructions que Claude lit), des commandes, des serveurs MCP, des hooks de réglages (scripts shell)… On appelle « mod » un plugin qui contient un <b>module de hooks</b> : du code TypeScript exécuté par le moteur lui-même. C'est ce qui permet de dessiner dans l'interface et d'intervenir finement sur chaque étape.</p>
+
+<table>
+<tr><th>Mécanisme</th><th>Langage</th><th>Peut dessiner ?</th><th>Usage typique</th></tr>
+<tr><td>Skill</td><td>Markdown</td><td>non</td><td>apprendre une méthode à Claude</td></tr>
+<tr><td>Hook de réglages (<code>settings.json</code>)</td><td>script shell</td><td>non</td><td>lancer un formateur après chaque édition</td></tr>
+<tr><td>Serveur MCP</td><td>tout langage</td><td>non</td><td>donner de nouveaux outils à Claude</td></tr>
+<tr><td><b>Mod (module de hooks)</b></td><td><b>TypeScript / JSX</b></td><td><b>oui</b></td><td><b>tout ce qui précède, plus l'interface</b></td></tr>
+</table>
+
+<h3>Ce qu'un mod peut faire</h3>
+<div class="cols">
+<div>
+<h4>Dans l'interface</h4>
+<ul>
+<li>afficher une <b>bande</b> au-dessus de la zone de saisie (jauge, compteur, météo…) ;</li>
+<li>ouvrir un <b>panneau latéral</b> qui reste à côté de la conversation ;</li>
+<li>montrer un <b>toast</b>, une entrée dans la <b>ligne d'état</b>, une <b>notification</b> système ;</li>
+<li>jouer un <b>son</b> ;</li>
+<li>redessiner certaines lignes de la conversation.</li>
+</ul>
+</div>
+<div>
+<h4>Dans le comportement</h4>
+<ul>
+<li>réécrire ou compléter un message avant que Claude le lise ;</li>
+<li>ajouter des consignes permanentes au prompt système ;</li>
+<li><b>autoriser ou bloquer</b> un appel d'outil (garde-fou) ;</li>
+<li>offrir de <b>nouveaux outils</b> à Claude ;</li>
+<li>ajouter des <b>commandes</b> <code>/mon-mod</code> ;</li>
+<li>lancer des tâches périodiques, lire des fichiers, appeler un site web.</li>
+</ul>
+</div>
+</div>
+
+<div class="fig">
+<svg viewBox="0 0 640 420" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, sans-serif">
+<rect x="4" y="4" width="632" height="350" rx="12" fill="#FBFAF7" stroke="#B4B2A9"/>
+<text x="20" y="28" font-size="15" fill="#5F5E5A">Application Claude (desktop) ou terminal</text>
+<rect x="16" y="40" width="112" height="304" rx="8" fill="#F1EFE8" stroke="#B4B2A9"/>
+<text x="72" y="190" font-size="15" font-weight="600" fill="#444441" text-anchor="middle">Sessions</text>
+<text x="72" y="209" font-size="13" fill="#5F5E5A" text-anchor="middle">et fichiers</text>
+<rect x="140" y="40" width="290" height="160" rx="8" fill="#F1EFE8" stroke="#B4B2A9"/>
+<text x="285" y="170" font-size="15" font-weight="600" fill="#444441" text-anchor="middle">Conversation</text>
+<text x="285" y="189" font-size="12.5" fill="#0F6E56" text-anchor="middle">lignes redessinables (ui.render)</text>
+<rect x="268" y="52" width="150" height="52" rx="8" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="343" y="74" font-size="15" font-weight="600" fill="#085041" text-anchor="middle">Toast</text>
+<text x="343" y="93" font-size="12.5" fill="#0F6E56" text-anchor="middle">$.ui.toast</text>
+<rect x="140" y="210" width="290" height="48" rx="8" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="285" y="231" font-size="15" font-weight="600" fill="#085041" text-anchor="middle">Bande au-dessus du prompt</text>
+<text x="285" y="249" font-size="12.5" fill="#0F6E56" text-anchor="middle">ui.render · AbovePrompt</text>
+<rect x="140" y="266" width="290" height="40" rx="8" fill="#F1EFE8" stroke="#B4B2A9"/>
+<text x="285" y="284" font-size="15" font-weight="600" fill="#444441" text-anchor="middle">Zone de saisie</text>
+<text x="285" y="300" font-size="12.5" fill="#0F6E56" text-anchor="middle">+ commandes /mon-mod</text>
+<rect x="140" y="314" width="290" height="30" rx="8" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="285" y="334" font-size="14" font-weight="600" fill="#085041" text-anchor="middle">Ligne d'état · $.ui.status</text>
+<rect x="442" y="40" width="182" height="304" rx="8" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="533" y="185" font-size="15" font-weight="600" fill="#085041" text-anchor="middle">Panneau latéral</text>
+<text x="533" y="204" font-size="12.5" fill="#0F6E56" text-anchor="middle">$.ui.open + ui.render · Pane</text>
+<rect x="384" y="364" width="252" height="50" rx="8" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="510" y="385" font-size="15" font-weight="600" fill="#085041" text-anchor="middle">Notification du système</text>
+<text x="510" y="403" font-size="12.5" fill="#0F6E56" text-anchor="middle">$.ui.notify · son : $.audio</text>
+<rect x="6" y="370" width="15" height="15" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="28" y="382" font-size="13" fill="#444441">Zone qu'un mod peut dessiner</text>
+<rect x="6" y="393" width="15" height="15" rx="3" fill="#F1EFE8" stroke="#B4B2A9"/>
+<text x="28" y="405" font-size="13" fill="#444441">Interface de l'application</text>
+</svg>
+</div>
+<p class="cap">Figure 1 — Les endroits de l'écran où un mod peut afficher quelque chose.</p>
+
+<h3>Ce qu'un mod ne peut pas faire</h3>
+<ul>
+<li>Il n'a <b>ni DOM, ni Node.js</b> : pas de <code>document</code>, pas de <code>require('fs')</code>, pas de <code>fetch</code> direct, pas de <code>setTimeout</code>. Tout passe par l'objet <code>$</code> que le moteur lui donne (fichiers, réseau, minuteries…).</li>
+<li>Il ne dessine qu'avec les <b>éléments</b> que la surface propose (<code>Box</code>, <code>Text</code>, <code>Button</code>…) : pas de HTML ni de CSS libre (sauf dans un <code>Svg</code> sur le bureau).</li>
+<li>Il ne peut pas changer ce que le modèle a <b>déjà reçu</b> dans une conversation (chapitre 9).</li>
+</ul>
+
+<!-- ============================================================ 2 -->
+<h2 id="c2"><span class="n">2</span>Ce qu'il faut installer</h2>
+
+<h3>Indispensable</h3>
+<ul>
+<li><b>Claude Code</b> en ligne de commande (<code>claude</code>), version récente. Vérifiez avec :
+<pre class="sh">claude --version</pre>
+Sous Windows, l'application de bureau embarque sa propre copie de la CLI, qui n'est pas dans le <code>PATH</code> : installez aussi la CLI pour taper les commandes de ce guide.</li>
+<li>Un <b>éditeur de code</b> qui comprend TypeScript (VS Code, par exemple). Il vous donnera l'autocomplétion sur tout l'objet <code>$</code>.</li>
+</ul>
+
+<h3>Utile</h3>
+<ul>
+<li><b>Git</b> et un compte <b>GitHub</b>, pour partager vos mods (chapitre 14).</li>
+<li><b>TypeScript</b> (<code>npm install -g typescript</code>) si vous voulez vérifier les types en dehors de l'éditeur avec <code>tsc</code>. Ce n'est pas obligatoire : le moteur compile lui-même vos fichiers.</li>
+</ul>
+
+<div class="box info"><b>Pas de build, pas de <code>npm install</code>.</b> Un mod n'a pas de <code>package.json</code> ni de dépendances : le moteur lit directement vos fichiers <code>.ts</code> ou <code>.tsx</code>. Le seul import « externe » est <code>'claude-code'</code>, fourni par le moteur.</div>
+
+<h3>Connaissances supposées</h3>
+<ul>
+<li>Les bases de <b>TypeScript</b> (ou de JavaScript moderne) : fonctions fléchées, <code>async</code>/<code>await</code>, déstructuration <code>{ a, b } = obj</code>, décomposition <code>{ ...e, x }</code>.</li>
+<li>Un peu de <b>JSX</b> (la syntaxe <code>&lt;Box&gt;…&lt;/Box&gt;</code> de React) pour dessiner. Il n'y a pas de React : le JSX sert seulement à écrire des arbres d'éléments lisibles.</li>
+</ul>
+
+<!-- ============================================================ 3 -->
+<h2 id="c3"><span class="n">3</span>Votre premier mod en 10 minutes</h2>
+
+<p>Objectif : un mod qui affiche un toast « Tour terminé en 12 s » à la fin de chaque réponse de Claude.</p>
+
+<h3>Étape 1 — Créer le dossier et trois fichiers</h3>
+<pre>bonjour/
+├─ .claude-plugin/
+│  └─ plugin.json      <span class="c">← carte d'identité du mod</span>
+└─ hooks/
+   ├─ hooks.json       <span class="c">← indique quel fichier contient le code</span>
+   └─ register.tsx     <span class="c">← le code</span></pre>
+
+<p><b><code>.claude-plugin/plugin.json</code></b></p>
+<pre>{
+  <span class="s">"name"</span>: <span class="s">"bonjour"</span>,
+  <span class="s">"version"</span>: <span class="s">"0.1.0"</span>,
+  <span class="s">"description"</span>: <span class="s">"Affiche la durée de chaque tour de Claude"</span>
+}</pre>
+
+<p><b><code>hooks/hooks.json</code></b></p>
+<pre>{ <span class="s">"modules"</span>: [<span class="s">"./register.tsx"</span>] }</pre>
+
+<p><b><code>hooks/register.tsx</code></b></p>
+<pre><span class="k">import type</span> { Register } <span class="k">from</span> <span class="s">'claude-code'</span>
+
+<span class="k">export const</span> register: Register = on =&gt; {
+  <span class="c">// À chaque fin de tour, le moteur appelle cette fonction.</span>
+  on(<span class="s">'turn.complete'</span>, ($, e, next) =&gt; {
+    <span class="k">const</span> secondes = Math.round(e.durationMs / 1000)
+    $.ui.toast(<span class="s">`Tour terminé en ${secondes} s`</span>)
+    <span class="k">return</span> next(e)   <span class="c">// laisse le moteur (et les autres mods) continuer</span>
+  })
+}</pre>
+
+<h3>Étape 2 — Vérifier</h3>
+<pre class="sh">claude plugin validate bonjour</pre>
+<p>La commande lit le manifeste et le code comme le ferait le moteur, liste ce que le mod branche (ici : <code>turn.complete</code>) et signale tout ce qui serait refusé. Lancez-la souvent.</p>
+
+<h3>Étape 3 — Charger le mod</h3>
+<pre class="sh">claude --plugin-dir ./bonjour</pre>
+<p>Une session démarre avec votre mod. Posez une question à Claude : à la fin de sa réponse, le toast apparaît.</p>
+
+<h3>Étape 4 — Modifier et voir le changement</h3>
+<p>Sans quitter la session, changez le texte du toast et enregistrez. Le dossier est <b>surveillé</b> : le mod est rechargé tout seul (environ un quart de seconde après la dernière sauvegarde). Au tour suivant, le nouveau texte s'affiche.</p>
+
+<div class="box tip"><b>Encore plus simple : demander à Claude.</b> Dans une session Claude Code, décrivez le mod voulu (« fais-moi un mod qui affiche un toast avec la durée de chaque tour »). Claude écrit les fichiers dans un dossier de mods de la session et vous demande une fois « Turn on the mods Claude writes in this session? ». Répondez <i>Turn them on</i> : le mod se charge à la fin du tour, et chaque modification suivante aussi. C'est un excellent moyen d'apprendre : lisez ensuite le code produit.</div>
+
+<h3>Et dans l'application de bureau ?</h3>
+<p>L'application ne permet pas de passer <code>--plugin-dir</code>. Utilisez la variable d'environnement <code>CLAUDE_CODE_PLUGIN_DIRS</code>, déclarée dans le bloc <code>env</code> de <code>~/.claude/settings.json</code> (chemins absolus, séparés par <code>;</code> sous Windows et <code>:</code> ailleurs) :</p>
+<pre>{
+  <span class="s">"env"</span>: {
+    <span class="s">"CLAUDE_CODE_PLUGIN_DIRS"</span>: <span class="s">"C:\\Users\\moi\\mods\\bonjour;C:\\Users\\moi\\mods\\autre"</span>
+  }
+}</pre>
+<p>Redémarrez l'application : chaque dossier listé est chargé comme avec <code>--plugin-dir</code>, et rechargé à chaque sauvegarde.</p>
+
+<!-- ============================================================ 4 -->
+<h2 id="c4"><span class="n">4</span>Les concepts essentiels</h2>
+
+<h3>Événements et hooks</h3>
+<p>Le moteur émet des <b>événements</b> : <code>session.start</code>, <code>prompt.submit</code>, <code>tool.call</code>, <code>ui.render</code>, <code>turn.complete</code>… Un <b>hook</b> est une fonction que vous accrochez à un événement avec <code>on</code> :</p>
+<pre>on(<span class="s">'tool.call'</span>, ($, e, next) =&gt; { … })                    <span class="c">// tous les appels d'outils</span>
+on(<span class="s">'tool.call'</span>, { tool: <span class="s">'Bash'</span> }, ($, e, next) =&gt; { … })   <span class="c">// seulement Bash</span></pre>
+<p>Le deuxième argument facultatif est un <b>filtre</b> (<i>matcher</i>) : le hook n'est appelé que si l'événement correspond. Il sert aussi au typage : avec <code>{ tool: 'Bash' }</code>, l'éditeur sait que <code>e.command</code> existe.</p>
+
+<h3>Les trois paramètres : <code>$</code>, <code>e</code>, <code>next</code></h3>
+<dl>
+<dt><code>$</code> — l'interface du moteur</dt>
+<dd>Tout ce que votre mod peut demander, rangé par « nom » puis « méthode » : <code>$.ui.toast()</code>, <code>$.session.usage()</code>, <code>$.store.get()</code>, <code>$.fs.read()</code>, <code>$.clock.every()</code>… Votre éditeur les liste tous.</dd>
+<dt><code>e</code> — les données de l'événement</dt>
+<dd>Un objet figé (on ne le modifie pas) : la commande Bash que Claude veut lancer, le texte que vous avez tapé, la durée du tour… Son contenu dépend de l'événement.</dd>
+<dt><code>next</code> — la suite</dt>
+<dd>Appeler <code>next(e)</code> passe la main aux autres mods puis au comportement normal du moteur, et renvoie le résultat. C'est le cœur du système.</dd>
+</dl>
+
+<h3>La chaîne : comment <code>next</code> fonctionne</h3>
+<p>Quand plusieurs mods écoutent le même événement, ils forment une <b>chaîne</b>, comme des poupées russes. Chacun reçoit l'événement, peut agir avant, appeler la suite, puis agir après :</p>
+
+<div class="fig">
+<svg viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, sans-serif">
+<defs><marker id="a1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#534AB7" stroke-width="1.6"/></marker>
+<marker id="a2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.6"/></marker></defs>
+<rect x="10" y="20" width="124" height="160" rx="10" fill="#F1EFE8" stroke="#888780"/>
+<text x="72" y="95" font-size="15" font-weight="600" fill="#444441" text-anchor="middle">Événement</text>
+<text x="72" y="115" font-size="12.5" fill="#5F5E5A" text-anchor="middle">tool.call (Bash)</text>
+<rect x="198" y="20" width="124" height="160" rx="10" fill="#EEEDFE" stroke="#534AB7"/>
+<text x="260" y="50" font-size="15" font-weight="600" fill="#3C3489" text-anchor="middle">Mod A</text>
+<text x="260" y="78" font-size="12" fill="#534AB7" text-anchor="middle">avant : vérifie</text>
+<text x="260" y="160" font-size="12" fill="#534AB7" text-anchor="middle">après : journalise</text>
+<rect x="386" y="20" width="124" height="160" rx="10" fill="#EEEDFE" stroke="#534AB7"/>
+<text x="448" y="50" font-size="15" font-weight="600" fill="#3C3489" text-anchor="middle">Mod B</text>
+<text x="448" y="78" font-size="12" fill="#534AB7" text-anchor="middle">avant : réécrit</text>
+<text x="448" y="160" font-size="12" fill="#534AB7" text-anchor="middle">après : toast</text>
+<rect x="574" y="20" width="116" height="160" rx="10" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="632" y="95" font-size="15" font-weight="600" fill="#085041" text-anchor="middle">Moteur</text>
+<text x="632" y="115" font-size="12.5" fill="#0F6E56" text-anchor="middle">lance Bash</text>
+<line x1="134" y1="100" x2="194" y2="100" stroke="#534AB7" stroke-width="1.6" marker-end="url(#a1)"/>
+<line x1="322" y1="100" x2="382" y2="100" stroke="#534AB7" stroke-width="1.6" marker-end="url(#a1)"/>
+<line x1="510" y1="100" x2="570" y2="100" stroke="#534AB7" stroke-width="1.6" marker-end="url(#a1)"/>
+<text x="354" y="93" font-size="11.5" fill="#534AB7" text-anchor="middle">next(e)</text>
+<text x="542" y="93" font-size="11.5" fill="#534AB7" text-anchor="middle">next(e)</text>
+<line x1="574" y1="135" x2="514" y2="135" stroke="#0F6E56" stroke-width="1.6" marker-end="url(#a2)"/>
+<line x1="386" y1="135" x2="326" y2="135" stroke="#0F6E56" stroke-width="1.6" marker-end="url(#a2)"/>
+<text x="542" y="151" font-size="11" fill="#0F6E56" text-anchor="middle">résultat</text>
+<text x="354" y="151" font-size="11" fill="#0F6E56" text-anchor="middle">résultat</text>
+</svg>
+</div>
+<p class="cap">Figure 2 — <code>next(e)</code> descend la chaîne jusqu'au moteur ; le résultat remonte.</p>
+
+<p>Un hook a donc quatre façons de répondre :</p>
+<table>
+<tr><th>Ce que fait le hook</th><th>Code</th><th>Effet</th></tr>
+<tr><td>Observer</td><td><code>return next(e)</code></td><td>tout se passe normalement</td></tr>
+<tr><td>Modifier</td><td><code>return next({ ...e, command: 'ls -la' })</code></td><td>la suite voit la version modifiée</td></tr>
+<tr><td>Réagir au résultat</td><td><code>const r = await next(e); …; return r</code></td><td>agir après coup</td></tr>
+<tr><td>Remplacer / bloquer</td><td><code>return { deny: 'interdit' }</code></td><td>la suite n'est jamais appelée</td></tr>
+</table>
+
+<div class="box warn"><b>Oublier <code>next</code></b> est l'erreur la plus courante. Si votre hook ne l'appelle pas, le moteur ne fait pas son travail habituel : une bande disparaît, un outil n'est jamais lancé… Sauf intention contraire, terminez toujours par <code>return next(e)</code>.</div>
+
+<h3>Les surfaces</h3>
+<p>Le même mod tourne partout. L'endroit où il dessine s'appelle la <b>surface</b> : <code>e.surface</code> vaut <code>'terminal'</code>, <code>'desktop'</code>, <code>'vscode'</code> ou <code>'mobile'</code>. Chaque surface fournit sa propre table d'éléments, obtenue par <code>$.ui.resolve(e)</code>. Le terminal ne dessine que du texte coloré ; le bureau sait en plus afficher des images SVG.</p>
+
+<h3>Un environnement isolé</h3>
+<p>Votre module tourne dans un bac à sable, séparé du moteur. Conséquences :</p>
+<ul>
+<li>pas de <code>window</code>, <code>process</code>, <code>require</code>, <code>setTimeout</code> : utilisez <code>$.fs</code>, <code>$.process</code>, <code>$.clock</code>… ;</li>
+<li>chaque rechargement relance votre module à neuf : les <b>variables du module</b> repartent de zéro (voir chapitre 8 pour garder des valeurs) ;</li>
+<li>un hook qui plante n'arrête pas le moteur : il est simplement ignoré (chapitre 13).</li>
+</ul>
+
+<!-- ============================================================ 5 -->
+<h2 id="c5"><span class="n">5</span>Anatomie d'un mod</h2>
+
+<pre>mon-mod/
+├─ .claude-plugin/
+│  ├─ plugin.json           <span class="c">obligatoire : nom, version, description, réglages</span>
+│  ├─ marketplace.json      <span class="c">facultatif : pour publier (chapitre 14)</span>
+│  └─ types/                <span class="c">écrit par le moteur, ne pas modifier ni versionner</span>
+├─ hooks/
+│  ├─ hooks.json            <span class="c">obligatoire : désigne le module</span>
+│  ├─ register.tsx          <span class="c">obligatoire : le code</span>
+│  ├─ outils.ts             <span class="c">facultatif : d'autres fichiers importés</span>
+│  └─ register.test.tsx     <span class="c">facultatif : tests automatiques</span>
+├─ types/index.d.ts         <span class="c">si le mod utilise $.state (chapitre 8)</span>
+├─ assets/carillon.wav      <span class="c">facultatif : sons, images…</span>
+└─ README.md</pre>
+
+<h3><code>plugin.json</code> : le manifeste</h3>
+<table>
+<tr><th>Champ</th><th>Rôle</th></tr>
+<tr><td><code>name</code></td><td>identifiant du mod : minuscules, chiffres et tirets. Sert aussi de nom à vos commandes, de préfixe à vos outils et de clé de stockage.</td></tr>
+<tr><td><code>version</code></td><td>version au format <code>majeur.mineur.correctif</code>. <b>À augmenter à chaque publication</b>, sinon les mises à jour ne voient rien.</td></tr>
+<tr><td><code>description</code></td><td>une phrase affichée dans les listes de plugins.</td></tr>
+<tr><td><code>userConfig</code></td><td>les réglages proposés à l'utilisateur (chapitre 11).</td></tr>
+<tr><td><code>types</code></td><td>chemin du contrat de types (<code>"./types/index.d.ts"</code>) quand le mod utilise <code>$.state</code>.</td></tr>
+<tr><td><code>dependencies</code></td><td>autres plugins dont ce mod réutilise les types.</td></tr>
+</table>
+
+<h3><code>hooks.json</code></h3>
+<p>Une seule ligne, un seul module, chemin relatif au fichier : <code>{ "modules": ["./register.tsx"] }</code>.</p>
+
+<h3>Le module de hooks</h3>
+<ul>
+<li>Extensions acceptées : <code>.ts</code>, <code>.tsx</code>, <code>.js</code>, <code>.jsx</code>, <code>.mjs</code>, <code>.cjs</code>, <code>.mts</code>, <code>.cts</code>. Utilisez <code>.tsx</code> dès que vous dessinez (JSX).</li>
+<li>Il exporte une fonction <code>register(on, options)</code>. <code>on</code> accroche les hooks ; <code>options</code> contient les réglages de l'utilisateur.</li>
+<li>Il peut importer d'autres fichiers du mod avec <code>import … from './outils'</code>. Les imports dynamiques <code>import()</code> sont interdits : un module qui en contient ne se charge pas.</li>
+<li><code>import … from 'claude-code'</code> n'apporte que des <b>types</b> et quelques fonctions utilitaires (<code>atom</code>, <code>read</code>, <code>update</code>…).</li>
+</ul>
+
+<h3>Les types : votre documentation intégrée</h3>
+<p>Dès que le moteur charge votre mod depuis son dossier, il écrit dans <code>.claude-plugin/types/</code> :</p>
+<ul>
+<li><code>claude-code/index.d.ts</code> : toute l'API (environ 14 000 lignes commentées, un exemple par fonction) ;</li>
+<li><code>claude-code-tools/index.d.ts</code> : les outils intégrés (Bash, Edit, Read…) et leurs paramètres ;</li>
+<li><code>claude-code-mcp/index.d.ts</code> : les outils MCP connectés ;</li>
+<li>un <code>tsconfig.json</code> que celui de votre mod peut étendre.</li>
+</ul>
+<p>Votre éditeur les utilise automatiquement : survolez <code>$.ui.toast</code> pour lire sa documentation. Ce dossier contient son propre <code>.gitignore</code> : il ne part pas dans votre dépôt.</p>
+
+<!-- ============================================================ 6 -->
+<h2 id="c6"><span class="n">6</span>Les événements</h2>
+
+<p>Voici le déroulement d'une session et les événements que vous rencontrerez le plus souvent.</p>
+
+<div class="fig">
+<svg viewBox="0 0 700 250" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, sans-serif">
+<defs><marker id="a3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#7F77DD" stroke-width="1.6"/></marker></defs>
+<rect x="5" y="10" width="125" height="56" rx="8" fill="#F1EFE8" stroke="#888780"/>
+<text x="67" y="33" font-size="13.5" font-weight="600" fill="#444441" text-anchor="middle">Démarrage</text>
+<text x="67" y="53" font-size="11.5" fill="#5F5E5A" text-anchor="middle">session.start</text>
+<line x1="130" y1="38" x2="150" y2="38" stroke="#7F77DD" stroke-width="1.5" marker-end="url(#a3)"/>
+<rect x="152" y="10" width="125" height="56" rx="8" fill="#EEEDFE" stroke="#534AB7"/>
+<text x="214" y="33" font-size="13.5" font-weight="600" fill="#3C3489" text-anchor="middle">Message envoyé</text>
+<text x="214" y="53" font-size="11.5" fill="#534AB7" text-anchor="middle">prompt.submit</text>
+<line x1="277" y1="38" x2="297" y2="38" stroke="#7F77DD" stroke-width="1.5" marker-end="url(#a3)"/>
+<rect x="299" y="10" width="125" height="56" rx="8" fill="#EEEDFE" stroke="#534AB7"/>
+<text x="361" y="33" font-size="13.5" font-weight="600" fill="#3C3489" text-anchor="middle">Prompt système</text>
+<text x="361" y="53" font-size="11.5" fill="#534AB7" text-anchor="middle">prompt.compose</text>
+<line x1="424" y1="38" x2="444" y2="38" stroke="#7F77DD" stroke-width="1.5" marker-end="url(#a3)"/>
+<rect x="446" y="10" width="125" height="56" rx="8" fill="#EEEDFE" stroke="#534AB7"/>
+<text x="508" y="33" font-size="13.5" font-weight="600" fill="#3C3489" text-anchor="middle">Outils (×n)</text>
+<text x="508" y="53" font-size="11.5" fill="#534AB7" text-anchor="middle">tool.call</text>
+<line x1="571" y1="38" x2="591" y2="38" stroke="#7F77DD" stroke-width="1.5" marker-end="url(#a3)"/>
+<rect x="593" y="10" width="102" height="56" rx="8" fill="#EEEDFE" stroke="#534AB7"/>
+<text x="644" y="33" font-size="13.5" font-weight="600" fill="#3C3489" text-anchor="middle">Fin du tour</text>
+<text x="644" y="53" font-size="11.5" fill="#534AB7" text-anchor="middle">turn.complete</text>
+<path d="M644 66 L644 92 L214 92 L214 70" fill="none" stroke="#7F77DD" stroke-width="1.3" stroke-dasharray="4 3" marker-end="url(#a3)"/>
+<text x="430" y="86" font-size="11.5" fill="#534AB7" text-anchor="middle">message suivant</text>
+<text x="5" y="125" font-size="13" fill="#5F5E5A">En continu, pendant toute la session</text>
+<rect x="5" y="135" width="165" height="50" rx="8" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="87" y="156" font-size="13.5" font-weight="600" fill="#085041" text-anchor="middle">Dessin</text>
+<text x="87" y="175" font-size="11.5" fill="#0F6E56" text-anchor="middle">ui.render</text>
+<rect x="180" y="135" width="165" height="50" rx="8" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="262" y="156" font-size="13.5" font-weight="600" fill="#085041" text-anchor="middle">Clic, saisie</text>
+<text x="262" y="175" font-size="11.5" fill="#0F6E56" text-anchor="middle">ui.press · ui.input</text>
+<rect x="355" y="135" width="165" height="50" rx="8" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="437" y="156" font-size="13.5" font-weight="600" fill="#085041" text-anchor="middle">Mesures</text>
+<text x="437" y="175" font-size="11.5" fill="#0F6E56" text-anchor="middle">session.measure</text>
+<rect x="530" y="135" width="165" height="50" rx="8" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="612" y="156" font-size="13.5" font-weight="600" fill="#085041" text-anchor="middle">Commande /</text>
+<text x="612" y="175" font-size="11.5" fill="#0F6E56" text-anchor="middle">command.run</text>
+<rect x="5" y="200" width="690" height="42" rx="8" fill="#F1EFE8" stroke="#888780"/>
+<text x="350" y="226" font-size="13.5" fill="#444441" text-anchor="middle"><tspan font-weight="600">Fin :</tspan> session.end (fermeture, ou /clear avec reason: 'clear')</text>
+</svg>
+</div>
+<p class="cap">Figure 3 — Les événements dans la vie d'une session.</p>
+
+<table>
+<tr><th>Événement</th><th>Quand</th><th>Ce qu'on en fait souvent</th></tr>
+<tr><td><code>session.start</code></td><td>une fois, quand la session est prête</td><td>enregistrer commandes et outils, ouvrir un panneau, lancer une minuterie</td></tr>
+<tr><td><code>session.end</code></td><td>fermeture ou <code>/clear</code></td><td>sauvegarder, nettoyer</td></tr>
+<tr><td><code>prompt.submit</code></td><td>vous envoyez un message</td><td>le corriger, le compléter, le bloquer</td></tr>
+<tr><td><code>prompt.compose</code></td><td>le moteur assemble le prompt système</td><td>ajouter une section de consignes</td></tr>
+<tr><td><code>tool.call</code></td><td>Claude appelle un outil</td><td>garde-fou, réécriture, journal, répondre à vos propres outils</td></tr>
+<tr><td><code>turn.complete</code></td><td>Claude a fini de répondre</td><td>toast, son, notification, statistiques</td></tr>
+<tr><td><code>session.measure</code></td><td>contexte, limites ou coût ont changé</td><td>redessiner une jauge</td></tr>
+<tr><td><code>ui.render</code></td><td>une zone doit être dessinée</td><td>bande, panneau, ligne de conversation</td></tr>
+<tr><td><code>ui.press</code>, <code>ui.input</code>, <code>ui.select</code></td><td>clic, saisie, choix dans vos éléments</td><td>généralement géré par <code>onPress</code>, <code>onSubmit</code>…</td></tr>
+<tr><td><code>command.run</code></td><td>une commande <code>/…</code> est lancée</td><td>répondre à vos commandes</td></tr>
+<tr><td><code>session.append</code></td><td>une ligne est ajoutée à la conversation</td><td>masquer des données sensibles</td></tr>
+<tr><td><code>classic.Stop</code>, <code>classic.SessionEnd</code>…</td><td>les hooks « classiques » de <code>settings.json</code></td><td>réutiliser leurs données</td></tr>
+</table>
+
+<p>La liste complète (agents, skills, télémétrie, flux <code>turn.step</code>…) est dans le fichier de types : cherchez <code>interface Events</code> ou le nom d'un événement entre apostrophes.</p>
+
+<h3>Le bon événement pour le bon besoin</h3>
+<p>Avant d'écrire, posez-vous deux questions : <b>quel événement</b> correspond à ce moment, et <b>de quoi ai-je besoin dans <code>$</code></b> ? Par exemple, « prévenir quand une longue réponse se termine » = <code>turn.complete</code> + <code>$.ui.notify</code> ; « empêcher Claude de modifier <code>.env</code> » = <code>tool.call</code> filtré sur <code>Edit</code> + <code>{ deny }</code>.</p>
+
+<!-- ============================================================ 7 -->
+<h2 id="c7"><span class="n">7</span>Afficher quelque chose</h2>
+
+<h3>Les affichages simples (une ligne de code)</h3>
+<p>Ces appels marchent depuis n'importe quel hook, sans JSX :</p>
+<table>
+<tr><th>Affichage</th><th>Code</th><th>Remarques</th></tr>
+<tr><td>Toast</td><td><code>$.ui.toast('Enregistré')</code></td><td>message bref qui disparaît seul</td></tr>
+<tr><td>Ligne d'état</td><td><code>$.ui.status('3 tests échouent')</code></td><td><code>$.ui.status(undefined)</code> l'efface</td></tr>
+<tr><td>Notification</td><td><code>$.ui.notify('Fini', { title: 'Claude' })</code></td><td>notification du système, selon les préférences de l'utilisateur</td></tr>
+<tr><td>Ligne de journal</td><td><code>$.ui.log('…')</code></td><td>ligne discrète dans la conversation</td></tr>
+<tr><td>Presse-papiers</td><td><code>$.ui.copy({ text })</code></td><td>renvoie <code>{ isCopied }</code></td></tr>
+<tr><td>Son</td><td><code>$.audio.play({ asset: 'assets/ding.wav' })</code></td><td>fichier du mod ; voir aussi chapitre 15</td></tr>
+</table>
+
+<h3>Dessiner avec <code>ui.render</code></h3>
+<p>Pour tout ce qui est plus riche, on accroche un hook à <code>ui.render</code> en ciblant un <b>composant</b> :</p>
+<ul>
+<li><code>{ component: 'AbovePrompt' }</code> : la bande au-dessus de la zone de saisie ;</li>
+<li><code>{ component: 'Pane', requestId: 'mon-id' }</code> : un panneau que vous avez ouvert ;</li>
+<li>d'autres composants de la conversation (<code>UserMessage</code>, <code>CommandOutput</code>…), pour les redessiner.</li>
+</ul>
+<p>Le hook reçoit dans <code>e</code> : <code>e.surface</code> (où l'on dessine), <code>e.props</code> (les données du composant, dont <code>bodyColumns</code>, la largeur disponible en colonnes) et <code>e.viewport</code> (taille de la zone). Il renvoie un <b>arbre d'éléments</b>.</p>
+
+<h3>Les éléments</h3>
+<p>On ne les importe pas : on les demande à la surface, puis on les utilise en JSX.</p>
+<pre><span class="k">const</span> { Box, Text, Button } = $.ui.resolve(e)</pre>
+<table>
+<tr><th>Élément</th><th>Rôle</th><th>Disponible</th></tr>
+<tr><td><code>Box</code></td><td>conteneur (disposition en ligne ou colonne, marges, bordure, couleur de fond)</td><td>partout</td></tr>
+<tr><td><code>Text</code></td><td>texte : <code>color</code> (une clé du thème comme <code>'success'</code>, <code>'error'</code>, <code>'warning'</code>, ou une couleur brute), <code>bold</code>, <code>dimColor</code>…</td><td>partout</td></tr>
+<tr><td><code>Button</code></td><td>bouton cliquable (<code>onPress</code>, <code>hotkey</code>, <code>variant</code>)</td><td>partout</td></tr>
+<tr><td><code>Input</code>, <code>Select</code></td><td>champ de saisie, liste de choix</td><td>pas sur mobile</td></tr>
+<tr><td><code>Markdown</code></td><td>texte mis en forme comme une réponse de Claude</td><td>partout</td></tr>
+<tr><td><code>Code</code>, <code>Link</code></td><td>bloc de code (ou diff), lien</td><td>partout</td></tr>
+<tr><td><code>Svg</code></td><td>image vectorielle (graphiques, cartes)</td><td>pas dans le terminal</td></tr>
+<tr><td><code>Raster</code>, <code>Image</code></td><td>grille de cases colorées, image</td><td>terminal</td></tr>
+</table>
+<p>La liste exacte des éléments et de leurs propriétés est dans les types (cherchez <code>Elements</code>). Un arbre qui utilise un élément ou une propriété inconnus de la surface est refusé, et le hook est ignoré.</p>
+
+<h3>Exemple : une bande au-dessus du prompt</h3>
+<pre><span class="k">import type</span> { Register } <span class="k">from</span> <span class="s">'claude-code'</span>
+
+<span class="k">export const</span> register: Register = on =&gt; {
+  <span class="c">// Redessiner quand une mesure change (après chaque réponse).</span>
+  on(<span class="s">'session.measure'</span>, ($, e, next) =&gt; {
+    $.ui.invalidate(<span class="s">'ui.render'</span>)
+    <span class="k">return</span> next(e)
+  })
+
+  on(<span class="s">'ui.render'</span>, { component: <span class="s">'AbovePrompt'</span> }, <span class="k">async</span> ($, e, next) =&gt; {
+    <span class="k">const</span> { Box, Text } = $.ui.resolve(e)
+    <span class="k">const</span> { context } = <span class="k">await</span> $.session.usage()
+    <span class="k">const</span> autres = <span class="k">await</span> next(e)        <span class="c">// les bandes des autres mods</span>
+    <span class="k">const</span> pct = context?.percent              <span class="c">// vide avant la 1re réponse</span>
+    <span class="k">const</span> couleur = pct === <span class="k">undefined</span> ? <span class="s">'subtle'</span> : pct &gt; 80 ? <span class="s">'error'</span> : <span class="s">'success'</span>
+    <span class="k">return</span> (
+      &lt;<span class="t">Box</span> flexDirection=<span class="s">"column"</span>&gt;
+        {autres}
+        &lt;<span class="t">Text</span> color={couleur}&gt;Contexte : {pct ?? <span class="s">'—'</span>} %&lt;/<span class="t">Text</span>&gt;
+      &lt;/<span class="t">Box</span>&gt;
+    )
+  })
+}</pre>
+<div class="box tip"><b>Pourquoi <code>await next(e)</code> ?</b> La bande est partagée : plusieurs mods peuvent y dessiner. En récupérant le dessin des autres et en l'incluant dans votre <code>Box</code>, vous les gardez à l'écran. Si vous n'avez rien à montrer, renvoyez simplement <code>next(e)</code>.</div>
+
+<h3>Redessiner</h3>
+<p>Le moteur ne redessine pas votre bande de lui-même quand <i>vos</i> données changent. Deux solutions :</p>
+<ul>
+<li>appeler <code>$.ui.invalidate('ui.render')</code> quand vous savez que quelque chose a changé (comme ci-dessus) ;</li>
+<li>mieux : lire vos données avec <code>$.state</code> pendant le dessin. Toute écriture redessine alors automatiquement ce qui les lit (chapitre 8).</li>
+</ul>
+
+<h3>Ouvrir un panneau latéral</h3>
+<p>Un panneau se fait en deux temps : l'<b>ouvrir</b> (avec un identifiant), puis le <b>dessiner</b> dans un hook qui cible cet identifiant.</p>
+<pre><span class="k">const</span> PANNEAU = <span class="s">'notes'</span>
+
+on(<span class="s">'session.start'</span>, <span class="k">async</span> ($, e, next) =&gt; {
+  <span class="k">void</span> $.ui.open({ id: PANNEAU, title: <span class="s">'Mes notes'</span> })
+  <span class="k">return</span> next(e)
+})
+
+on(<span class="s">'ui.render'</span>, { component: <span class="s">'Pane'</span>, requestId: PANNEAU }, <span class="k">async</span> ($, e) =&gt; {
+  <span class="k">const</span> { Box, Text } = $.ui.resolve(e)
+  <span class="k">const</span> largeur = e.props.bodyColumns        <span class="c">// en colonnes de texte</span>
+  <span class="k">return</span> (
+    &lt;<span class="t">Box</span> flexDirection=<span class="s">"column"</span>&gt;
+      &lt;<span class="t">Text</span> bold&gt;Bonjour !&lt;/<span class="t">Text</span>&gt;
+      &lt;<span class="t">Text</span> dimColor&gt;Largeur disponible : {largeur} colonnes&lt;/<span class="t">Text</span>&gt;
+    &lt;/<span class="t">Box</span>&gt;
+  )
+})</pre>
+<p><code>$.ui.open</code> renvoie <code>{ isPlaced }</code> : vrai si une surface l'affiche maintenant. Dans le terminal en plein écran ou sur le bureau, le panneau se place à côté de la conversation. Une commande <code>/notes</code> qui le rouvre est une bonne idée : l'utilisateur peut l'avoir fermé (chapitre 10).</p>
+
+<h3>Boutons et interactions</h3>
+<pre><span class="k">const</span> { Box, Text, Button } = $.ui.resolve(e)
+<span class="k">return</span> (
+  &lt;<span class="t">Box</span> flexDirection=<span class="s">"row"</span> gap={1}&gt;
+    &lt;<span class="t">Button</span> key=<span class="s">"plus"</span> hotkey=<span class="s">"p"</span> variant=<span class="s">"primary"</span>
+            onPress={() =&gt; update($, compteur, n =&gt; n + 1)}&gt;Ajouter&lt;/<span class="t">Button</span>&gt;
+    &lt;<span class="t">Button</span> key=<span class="s">"zero"</span> onPress={() =&gt; update($, compteur, () =&gt; 0)}&gt;Remettre à zéro&lt;/<span class="t">Button</span>&gt;
+  &lt;/<span class="t">Box</span>&gt;
+)</pre>
+<ul>
+<li>Donnez à chaque bouton une <b><code>key</code> unique</b> : c'est ainsi que la surface le retrouve après un redessin.</li>
+<li>Le gestionnaire <code>onPress</code> reste dans votre mod ; le clic déclenche l'événement <code>ui.press</code>.</li>
+<li>Dans le terminal, <code>hotkey</code> (un chiffre ou une lettre) active le bouton quand la zone a le focus ; <kbd>Échap</kbd> revient à la saisie.</li>
+<li>Un hook de dessin <b>n'écrit jamais</b> de données : il lit. Les écritures se font dans les gestionnaires (<code>onPress</code>) ou dans d'autres événements.</li>
+</ul>
+
+<h3>Adapter le dessin à la surface</h3>
+<pre><span class="k">if</span> (e.surface !== <span class="s">'terminal'</span>) {
+  <span class="k">const</span> { Svg } = $.ui.resolve(e)
+  <span class="k">return</span> &lt;<span class="t">Svg</span> source={carteSvg(donnees)} alt=<span class="s">"Jauge du contexte"</span> /&gt;
+}
+<span class="c">// Terminal : une version texte.</span>
+<span class="k">const</span> { Text } = $.ui.resolve(e)
+<span class="k">return</span> &lt;<span class="t">Text</span>&gt;█████░░░░░ 50 %&lt;/<span class="t">Text</span>&gt;</pre>
+<div class="box warn"><b>Piège vécu.</b> La table d'éléments du terminal contient parfois <code>Svg</code> sans savoir le dessiner. Testez <code>e.surface !== 'terminal'</code>, jamais <code>'Svg' in table</code>, sinon le terminal n'affiche rien.</div>
+
+<!-- ============================================================ 8 -->
+<h2 id="c8"><span class="n">8</span>Garder des données</h2>
+
+<p>Trois endroits possibles, qui ne durent pas aussi longtemps :</p>
+<table>
+<tr><th>Où</th><th>Durée de vie</th><th>Redessine ?</th><th>Usage</th></tr>
+<tr><td>Variable du module (<code>let x</code>)</td><td>jusqu'au prochain rechargement du mod</td><td>non</td><td>cache, valeur calculée une fois</td></tr>
+<tr><td><code>$.state</code></td><td>la session (survit aux rechargements)</td><td><b>oui, automatiquement</b></td><td>ce que l'interface affiche</td></tr>
+<tr><td><code>$.store</code></td><td>toutes les sessions (fichier JSON)</td><td>non</td><td>préférences, historique, dernière mesure</td></tr>
+</table>
+
+<h3><code>$.store</code> : la mémoire permanente</h3>
+<pre><span class="k">const</span> total = Number((<span class="k">await</span> $.store.get(<span class="s">'tours'</span>)) ?? 0) + 1
+<span class="k">await</span> $.store.set(<span class="s">'tours'</span>, total)
+<span class="c">// aussi : $.store.delete(clé), $.store.keys()</span></pre>
+<p>Les valeurs doivent être du JSON (une <code>Date</code> devient une chaîne, une <code>Map</code> devient <code>{}</code>). Limite : 4 Mo au total par mod.</p>
+
+<h3><code>$.state</code> : l'état qui redessine</h3>
+<p><code>$.state</code> garde des valeurs pour la durée de la session. Toute lecture faite <b>pendant un dessin</b> abonne ce dessin : quand la valeur change, il est redessiné tout seul. C'est la bonne façon d'alimenter une bande ou un panneau.</p>
+
+<h4>1. Déclarer le contrat de types</h4>
+<p>Chaque valeur se déclare dans <code>types/index.d.ts</code>, sous le nom du mod :</p>
+<pre><span class="c">// types/index.d.ts</span>
+<span class="k">export type</span> Note = { texte: string; date: number }
+
+<span class="k">declare module</span> <span class="s">'claude-code'</span> {
+  <span class="k">interface</span> PluginState {
+    <span class="s">'mes-notes'</span>: { notes: Shaped&lt;Note[]&gt;; compteur: number }
+  }
+}</pre>
+<p>…et se référence dans <code>plugin.json</code> : <code>"types": "./types/index.d.ts"</code>. <code>claude plugin validate</code> vérifie ensuite que le code respecte ce contrat.</p>
+
+<h4>2. Lire et écrire avec <code>atom</code>, <code>read</code>, <code>update</code></h4>
+<pre><span class="k">import</span> { atom, read, update } <span class="k">from</span> <span class="s">'claude-code'</span>
+<span class="k">import type</span> { Register } <span class="k">from</span> <span class="s">'claude-code'</span>
+
+<span class="c">// Une valeur, avec sa valeur initiale.</span>
+<span class="k">const</span> compteur = atom({ plugin: <span class="s">'mes-notes'</span>, key: <span class="s">'compteur'</span> } <span class="k">as const</span>, 0)
+
+<span class="k">export const</span> register: Register = on =&gt; {
+  on(<span class="s">'turn.complete'</span>, <span class="k">async</span> ($, e, next) =&gt; {
+    <span class="k">await</span> update($, compteur, n =&gt; n + 1)      <span class="c">// écrit → redessine les lecteurs</span>
+    <span class="k">return</span> next(e)
+  })
+
+  on(<span class="s">'ui.render'</span>, { component: <span class="s">'AbovePrompt'</span> }, <span class="k">async</span> ($, e, next) =&gt; {
+    <span class="k">const</span> { Box, Text } = $.ui.resolve(e)
+    <span class="k">const</span> n = <span class="k">await</span> read($, compteur)              <span class="c">// lit et s'abonne</span>
+    <span class="k">return</span> &lt;<span class="t">Box</span> flexDirection=<span class="s">"column"</span>&gt;{<span class="k">await</span> next(e)}&lt;<span class="t">Text</span>&gt;{n} tours&lt;/<span class="t">Text</span>&gt;&lt;/<span class="t">Box</span>&gt;
+  })
+}</pre>
+<ul>
+<li><code>update</code> lit, applique votre fonction et écrit, en réessayant si la valeur a changé entre-temps : deux clics rapides comptent bien pour deux.</li>
+<li>Le <code>plugin</code> et la <code>key</code> doivent être écrits en <b>littéraux</b> (pas calculés) : le moteur les vérifie en lisant le code.</li>
+<li>Seul le mod propriétaire écrit ses valeurs ; les autres peuvent les lire.</li>
+</ul>
+
+<h4>3. Survivre aux changements de format</h4>
+<p>Comme <code>$.state</code> survit aux rechargements, votre nouveau code peut lire une valeur écrite par l'ancien. Pour une valeur déclarée <code>Shaped&lt;T&gt;</code>, ajoutez une étiquette de format et changez-la quand la forme des données change :</p>
+<pre><span class="k">const</span> notes = atom({ plugin: <span class="s">'mes-notes'</span>, key: <span class="s">'notes'</span> } <span class="k">as const</span>, [], { shape: <span class="s">'notes-2'</span> })
+<span class="c">// Une valeur écrite avec une autre étiquette est lue comme la valeur initiale [].</span></pre>
+
+<h3>Combiner les deux</h3>
+<p>Pour garder une valeur affichée d'une session à l'autre : écrivez-la dans <code>$.state</code> <i>et</i> dans <code>$.store</code>, et au <code>session.start</code>, rechargez <code>$.state</code> depuis <code>$.store</code>. C'est ce que font les mods usage-limits et usage-forecast pour montrer la dernière mesure connue avant la première réponse d'une session.</p>
+
+<!-- ============================================================ 9 -->
+<h2 id="c9"><span class="n">9</span>Agir sur Claude</h2>
+
+<h3>Modifier un message avant envoi : <code>prompt.submit</code></h3>
+<pre>on(<span class="s">'prompt.submit'</span>, ($, e, next) =&gt; {
+  <span class="c">// Ajoute une consigne à chaque message qui parle de tests.</span>
+  <span class="k">if</span> (/\btests?\b/i.test(e.text))
+    <span class="k">return</span> next({ ...e, text: e.text + <span class="s">'\n\n(Utilise vitest, pas jest.)'</span> })
+  <span class="k">return</span> next(e)
+})</pre>
+<p>Un hook peut aussi refuser le message (<code>{ drop: 'raison' }</code>). Les commandes <code>/…</code> passent par cet événement mais leur texte ne se réécrit pas ici : utilisez <code>command.run</code>.</p>
+
+<h3>Ajouter des consignes permanentes : <code>prompt.compose</code></h3>
+<p>Le prompt système est une liste de <b>sections</b> (<code>{ id, text, scope }</code>). Ajoutez la vôtre à la fin de ce que renvoie <code>next(e)</code> :</p>
+<pre>on(<span class="s">'prompt.compose'</span>, <span class="k">async</span> ($, e, next) =&gt; {
+  <span class="k">const</span> { sections } = <span class="k">await</span> next(e)
+  <span class="k">return</span> {
+    sections: [...sections, {
+      id: <span class="s">'mon-mod:style'</span>,                       <span class="c">// toujours préfixé par le nom du mod</span>
+      text: <span class="s">'Réponds toujours en français. Commente le code en français.'</span>,
+      scope: <span class="s">'session'</span>,
+    }],
+  }
+})</pre>
+
+<div class="box warn"><b>Règle importante : ce qui a été envoyé est figé.</b> Le modèle met en cache le début de chaque conversation (prompt système, outils, messages précédents). Si votre section change en cours de conversation, ce cache est perdu (réponses plus lentes et plus coûteuses) et le raisonnement précédent aussi. Une section doit donc donner <b>le même texte pendant toute une conversation</b>. Pour apporter une information nouvelle en cours de route, ajoutez plutôt une ligne à la fin avec <code>$.session.append({ message: { type: 'user', content: [{ type: 'text', text: '…' }] } })</code>.</div>
+
+<h3>Surveiller les outils : <code>tool.call</code></h3>
+<p>C'est l'événement le plus puissant. Chaque fois que Claude veut lire un fichier, l'éditer, lancer une commande…, votre hook voit l'appel et ses paramètres.</p>
+
+<h4>Un garde-fou</h4>
+<pre><span class="k">const</span> PROTEGE = /(^|\/)\.env(\.|$)/
+
+on(<span class="s">'tool.call'</span>, { tool: <span class="s">'Edit'</span> }, ($, e, next) =&gt;
+  PROTEGE.test(e.file_path)
+    ? { deny: <span class="s">`${$.plugin.name} : ${e.file_path} est protégé.`</span> }
+    : next(e),
+).catch(($, e, next) =&gt;
+  <span class="c">// Si le hook plante, on refuse par prudence (sauf si next a déjà tourné).</span>
+  next.called ? next(e) : { deny: <span class="s">`${$.plugin.name} : le garde-fou a échoué.`</span> },
+)</pre>
+<p>Claude reçoit la raison du refus et s'adapte. Le <code>.catch</code> est essentiel pour un garde-fou : sans lui, un hook qui plante est ignoré… et l'action interdite passe.</p>
+
+<h4>Modifier ou observer</h4>
+<pre>on(<span class="s">'tool.call'</span>, { tool: <span class="s">'Bash'</span> }, <span class="k">async</span> ($, e, next) =&gt; {
+  <span class="k">const</span> r = <span class="k">await</span> next({ ...e, command: e.command.trim() })   <span class="c">// réécrit puis exécute</span>
+  <span class="k">const</span> echec = r.deny === <span class="k">undefined</span> &amp;&amp; r.isError === <span class="k">true</span>
+  $.ui.status(echec ? <span class="s">`échec : ${e.command.slice(0, 40)}`</span> : <span class="k">undefined</span>)
+  <span class="k">return</span> r
+})</pre>
+
+<h3>Donner un nouvel outil à Claude</h3>
+<p>Un mod peut déclarer un outil que Claude appellera de lui-même. On le déclare au démarrage, et on y répond dans <code>tool.call</code>. L'outil s'appelle <code>mcp__&lt;nom-du-mod&gt;__&lt;nom&gt;</code>.</p>
+<pre>on(<span class="s">'session.start'</span>, <span class="k">async</span> ($, e, next) =&gt; {
+  <span class="k">await</span> $.tool.register({
+    name: <span class="s">'heure'</span>,
+    description: <span class="s">"Donne l'heure locale de l'utilisateur."</span>,
+    inputSchema: { type: <span class="s">'object'</span>, properties: {} },
+    isDeferred: <span class="k">false</span>,           <span class="c">// visible d'emblée par Claude</span>
+  })
+  <span class="k">return</span> next(e)
+})
+
+on(<span class="s">'tool.call'</span>, { tool: <span class="s">'mcp__mon-mod__heure'</span> }, <span class="k">async</span> $ =&gt; {
+  <span class="k">const</span> maintenant = <span class="k">new</span> Date(<span class="k">await</span> $.clock.now())
+  <span class="k">return</span> { result: maintenant.toLocaleTimeString(<span class="s">'fr-FR'</span>) }
+})</pre>
+<p>Sans <code>isDeferred: false</code>, l'outil est rangé derrière la recherche d'outils : Claude ne voit que son nom et charge sa description quand il en a besoin.</p>
+
+<h3>Appeler le modèle soi-même</h3>
+<ul>
+<li><code>$.model.complete({ model, prompt })</code> : une question isolée, sans historique (résumer, classer…). Le résultat dit toujours s'il a répondu (<code>isAnswered</code>) et combien il a coûté (<code>usage</code>).</li>
+<li><code>$.model.fork({ prompt })</code> : une question posée sur toute la conversation en cours, en profitant de son cache.</li>
+<li><code>$.prompt.submit({ text })</code> : envoie un message comme si l'utilisateur l'avait tapé, au prochain moment libre.</li>
+<li><code>$.agent.register</code> / <code>$.agent.spawn</code> : déclarer et lancer des sous-agents.</li>
+</ul>
+<p>Ces appels sont facturés sur le compte de l'utilisateur : utilisez-les avec mesure.</p>
+
+<!-- ============================================================ 10 -->
+<h2 id="c10"><span class="n">10</span>Commandes, minuteries, système</h2>
+
+<h3>Ajouter une commande <code>/mon-mod</code></h3>
+<pre>on(<span class="s">'session.start'</span>, <span class="k">async</span> ($, e, next) =&gt; {
+  <span class="k">await</span> $.command.register({ name: <span class="s">'notes'</span>, description: <span class="s">'Ouvre le panneau des notes'</span> })
+  <span class="k">return</span> next(e)
+})
+
+on(<span class="s">'command.run'</span>, { command: <span class="s">'notes'</span> }, <span class="k">async</span> ($, e) =&gt; {
+  <span class="k">await</span> $.ui.open({ id: <span class="s">'notes'</span>, title: <span class="s">'Mes notes'</span> })
+  <span class="k">return</span> { text: <span class="s">'Panneau des notes ouvert.'</span> }   <span class="c">// ligne affichée (et lue par Claude)</span>
+})</pre>
+<p>La réponse <code>{ text }</code> apparaît dans la conversation ; ajoutez <code>context</code> pour des notes que seul Claude lit. Les arguments tapés après la commande sont dans <code>e.args</code>.</p>
+
+<h3>Minuteries : <code>$.clock</code></h3>
+<table>
+<tr><th>Appel</th><th>Effet</th></tr>
+<tr><td><code>await $.clock.now()</code></td><td>l'heure, en millisecondes</td></tr>
+<tr><td><code>await $.clock.sleep(500, { signal: next.signal })</code></td><td>attendre (compte dans le temps du hook)</td></tr>
+<tr><td><code>$.clock.after(ms, fn)</code></td><td>appeler <code>fn</code> une fois plus tard</td></tr>
+<tr><td><code>$.clock.every(ms, fn)</code></td><td>appeler <code>fn</code> régulièrement</td></tr>
+</table>
+<p>Les deux dernières renvoient un objet permettant d'annuler. Lancez les tâches de fond dans <code>session.start</code> : un rechargement du mod les arrête toutes, et <code>session.start</code> les relance.</p>
+<pre>on(<span class="s">'session.start'</span>, ($, e, next) =&gt; {
+  $.clock.every(60_000, () =&gt; { $.ui.invalidate(<span class="s">'ui.render'</span>) })   <span class="c">// redessine chaque minute</span>
+  <span class="k">return</span> next(e)
+})</pre>
+
+<h3>Fichiers, processus, réseau</h3>
+<table>
+<tr><th>Besoin</th><th>Appel</th></tr>
+<tr><td>Lire un fichier</td><td><code>await $.fs.read(chemin)</code> (texte) ou <code>{ as: 'bytes' }</code> (base64)</td></tr>
+<tr><td>Écrire, lister, inspecter</td><td><code>$.fs.write</code>, <code>$.fs.list</code>, <code>$.fs.stat</code></td></tr>
+<tr><td>Lancer une commande</td><td><code>await $.process.run({ argv: ['git', 'status'] })</code> → <code>{ exitCode, stdout, stderr }</code></td></tr>
+<tr><td>Suivre une commande longue</td><td><code>$.process.spawn({ argv })</code> (flux)</td></tr>
+<tr><td>Appeler un site web</td><td><code>await $.http.fetch(url, { method, headers, body })</code></td></tr>
+<tr><td>Dossier de la session</td><td><code>await $.session.root()</code></td></tr>
+<tr><td>Mesures (contexte, limites, coût)</td><td><code>await $.session.usage()</code></td></tr>
+<tr><td>Version du moteur</td><td><code>await $.session.version()</code></td></tr>
+</table>
+<p><code>$.process.run</code> exécute la commande avec les droits de l'utilisateur, en lui passant les arguments un par un (<code>argv</code>) : pas d'interprétation par un shell, donc pas d'injection par des espaces ou des guillemets.</p>
+
+<h3>Travail qui dure : le budget</h3>
+<p>Chaque hook dispose d'un <b>budget de temps</b>. Les appels à <code>next</code> et à <code>$</code> en cours ne comptent pas, mais <code>$.clock.sleep</code> si. <code>next.signal</code> s'annule quand l'événement est abandonné (l'utilisateur interrompt, le budget est épuisé) : passez-le à tout ce qui peut attendre. Un travail qui doit durer au-delà d'un événement se lance depuis <code>session.start</code> et se poursuit avec <code>$.clock.every</code> / <code>after</code>.</p>
+
+<!-- ============================================================ 11 -->
+<h2 id="c11"><span class="n">11</span>Les réglages utilisateur</h2>
+
+<p>Un mod peut proposer des réglages. Ils se déclarent dans <code>plugin.json</code> sous <code>userConfig</code> :</p>
+<pre>{
+  <span class="s">"name"</span>: <span class="s">"usage-limits"</span>,
+  <span class="s">"version"</span>: <span class="s">"0.2.2"</span>,
+  <span class="s">"description"</span>: <span class="s">"Affiche les limites d'usage sur 5 heures et sur 7 jours"</span>,
+  <span class="s">"userConfig"</span>: {
+    <span class="s">"theme"</span>: {
+      <span class="s">"type"</span>: <span class="s">"string"</span>,
+      <span class="s">"title"</span>: <span class="s">"Thème de la carte"</span>,
+      <span class="s">"description"</span>: <span class="s">"auto suit le thème de l'affichage."</span>,
+      <span class="s">"default"</span>: <span class="s">"auto"</span>,
+      <span class="s">"options"</span>: [<span class="s">"auto"</span>, <span class="s">"sombre"</span>, <span class="s">"clair"</span>]
+    }
+  }
+}</pre>
+<ul>
+<li>Types possibles : <code>string</code>, <code>number</code>, <code>boolean</code>, liste de chaînes. Un champ <code>string</code> avec <code>options</code> devient une <b>liste de choix</b> ; une valeur hors liste compte comme non définie (la valeur par défaut s'applique).</li>
+<li>Chaque réglage non secret apparaît dans <code>/config</code>. Le changer recharge le mod avec les nouvelles valeurs.</li>
+<li>Les valeurs sont stockées dans <code>~/.claude/settings.json</code>, sous <code>pluginConfigs["&lt;mod&gt;@&lt;marketplace&gt;"].options</code> (ou <code>"&lt;mod&gt;"</code> pour un mod chargé par <code>--plugin-dir</code>). Les champs marqués sensibles vont dans le stockage sécurisé.</li>
+<li>Un champ obligatoire sans valeur empêche le mod de se charger, avec un message qui le nomme.</li>
+</ul>
+
+<h3>Lire les réglages</h3>
+<pre><span class="k">export const</span> register: Register = (on, options) =&gt; {
+  <span class="k">const</span> theme = String(options.theme ?? <span class="s">'auto'</span>)   <span class="c">// valeurs par défaut déjà appliquées</span>
+  …
+}</pre>
+
+<div class="box tip"><b>Réglages ou <code>$.store</code> ?</b> Les <code>userConfig</code> sont ce que l'utilisateur choisit explicitement (thème, seuil, activation d'un son). <code>$.store</code> est ce que le mod mémorise de lui-même (dernière mesure, historique). Ne mélangez pas les deux.</div>
+
+<!-- ============================================================ 12 -->
+<h2 id="c12"><span class="n">12</span>Tester son mod</h2>
+
+<h3>Niveau 1 : la validation</h3>
+<pre class="sh">claude plugin validate mon-mod</pre>
+<p>Elle lit le manifeste, le module et, s'il existe, le <code>marketplace.json</code>. Elle liste :</p>
+<ul>
+<li>les événements branchés et les appels faits sur <code>$</code> ;</li>
+<li>les clés <code>$.state</code> utilisées et leur conformité au contrat ;</li>
+<li>les hooks « décisifs » (qui peuvent refuser quelque chose), avec ou sans <code>.catch</code> ;</li>
+<li>tout ce que le moteur refuserait au chargement.</li>
+</ul>
+
+<h3>Niveau 2 : les types</h3>
+<p>Une fois le mod chargé une fois, ses types sont posés : <code>tsc -p mon-mod</code> vérifie tout le code (avec un <code>tsconfig.json</code> à la racine du mod qui étend celui de <code>.claude-plugin/types/</code>). L'éditeur fait la même chose en continu.</p>
+
+<h3>Niveau 3 : les tests automatiques</h3>
+<pre class="sh">claude plugin test mon-mod</pre>
+<p>Cette commande exécute les fichiers <code>*.test.ts</code> / <code>*.test.tsx</code> du mod <b>avec le vrai moteur</b>, mais sans session : c'est le test qui joue le rôle du moteur.</p>
+
+<h4>Le principe</h4>
+<p>Un test reçoit <code>$</code> et <code>on</code>. Avec <code>$</code>, il <b>déclenche</b> des événements (<code>$.turn.complete(…)</code>, <code>$.tool.call(…)</code>). Avec <code>on</code>, il installe des hooks qui se placent <b>sous</b> votre mod et <b>remplacent le moteur</b> : ils décident de ce que répond <code>$.store.get</code>, <code>$.session.usage</code>, <code>$.clock.now</code>…, et enregistrent ce que votre mod a demandé (un toast, une notification).</p>
+
+<pre><span class="k">import</span> { expect, test } <span class="k">from</span> <span class="s">'claude-code/testing'</span>
+
+test(<span class="s">'un tour long affiche un toast avec la durée'</span>, <span class="k">async</span> ($, on) =&gt; {
+  <span class="k">const</span> vus: string[] = []
+  <span class="c">// Ce que le « moteur » répond :</span>
+  on(<span class="s">'turn.complete'</span>, () =&gt; ({ text: <span class="s">'ok'</span> }))
+  on(<span class="s">'ui.toast'</span>, (_, e) =&gt; { vus.push(JSON.stringify(e)); <span class="k">return</span> { value: <span class="k">undefined</span> } })
+
+  <span class="c">// On déclenche l'événement :</span>
+  <span class="k">await</span> $.turn.complete({
+    answer: <span class="s">'ok'</span>, isAborted: <span class="k">false</span>, turnId: <span class="s">'t1'</span>, reason: <span class="s">'answer'</span>, durationMs: 12_000,
+  })
+
+  expect(vus.some(v =&gt; v.includes(<span class="s">'12 s'</span>))).toBe(<span class="k">true</span>)
+})</pre>
+<p>Un appel sur <code>$</code> (comme <code>ui.toast</code>) se simule en répondant <code>{ value: … }</code> ; un événement (comme <code>turn.complete</code>), par son propre résultat.</p>
+
+<h4>Tester un dessin, sur toutes les surfaces</h4>
+<pre><span class="k">for</span> (<span class="k">const</span> surface <span class="k">of</span> [<span class="s">'terminal'</span>, <span class="s">'desktop'</span>] <span class="k">as const</span>) {
+  <span class="k">const</span> ui = <span class="k">await</span> $.ui.mount({
+    plugin: <span class="s">'mon-mod'</span>, surface, component: <span class="s">'AbovePrompt'</span>,
+    props: { bodyColumns: 80, view: {} },
+  })
+  <span class="k">const</span> ligne = <span class="k">await</span> ui.find({ type: <span class="s">'Text'</span>, text: /Contexte/ })
+  expect(ligne?.text).toBe(<span class="s">'Contexte : 42 %'</span>)
+  <span class="k">await</span> ui.unmount()
+}</pre>
+<p><code>ui.find</code> cherche un élément, <code>ui.press</code> clique sur un bouton par sa <code>key</code>, <code>ui.input</code> remplit un champ. Boucler sur les surfaces prouve que le mod ne dépend pas de l'une d'elles. Les propriétés exactes à passer à <code>mount</code> pour chaque composant sont dans les types.</p>
+
+<div class="box warn"><b>Piège.</b> Comme rien n'existe sous votre mod pendant un test, <b>tout</b> ce qu'il appelle doit être simulé : si votre bande appelle <code>next(e)</code>, il faut un hook <code>ui.render</code> de test qui renvoie quelque chose ; si elle lit <code>$.store</code>, un hook <code>store.get</code>, etc.</div>
+
+<h4>Tester les réglages et l'horloge</h4>
+<ul>
+<li><code>test('nom', { options: { theme: 'clair' } }, async ($, on) =&gt; …)</code> donne des réglages au mod.</li>
+<li><code>mock.clock(on)</code> (importé de <code>claude-code/testing</code>) fournit une horloge que le test fait avancer.</li>
+</ul>
+
+<!-- ============================================================ 13 -->
+<h2 id="c13"><span class="n">13</span>Déboguer</h2>
+
+<h3>Ce qui se passe quand un hook échoue</h3>
+<p>Un hook qui lève une exception, dépasse son budget ou renvoie une forme invalide est <b>ignoré seul</b> : la chaîne continue sans lui et l'application ne plante pas. C'est rassurant pour l'utilisateur, mais déroutant pour le développeur : un mod qui « ne fait rien » a en général été ignoré pour une raison précise.</p>
+
+<h3>Où lire la raison</h3>
+<table class="wrap">
+<tr><th>Situation</th><th>Où regarder</th></tr>
+<tr><td>Mod chargé depuis son dossier (<code>--plugin-dir</code>, <code>CLAUDE_CODE_PLUGIN_DIRS</code>, mod écrit par Claude)</td><td>une <b>ligne grise</b> dans la conversation, une fois par chargement : <code>mon-mod: ui.render hook skipped: …</code></td></tr>
+<tr><td>Mod installé depuis un marketplace</td><td>le journal : lancez <code>claude --debug</code></td></tr>
+<tr><td>Le module ne se charge pas du tout</td><td>ligne grise ou journal ; <code>claude plugin validate</code> dit presque toujours pourquoi</td></tr>
+</table>
+
+<h3>Les causes les plus fréquentes</h3>
+<ul>
+<li><b>Un élément ou une propriété inconnus</b> de la surface (un <code>Svg</code> dans le terminal, une <code>borderStyle</code> inventée…). Le message cite l'élément et la raison.</li>
+<li><b>Un <code>next</code> oublié</b> : rien n'est cassé, mais ce que le moteur aurait fait n'a pas lieu.</li>
+<li><b>Une valeur absente</b> au début de session : <code>$.session.usage()</code> est vide avant la première réponse. Prévoyez les <code>undefined</code>.</li>
+<li><b>Une écriture pendant un dessin</b> : <code>$.state.set</code> est refusé dans <code>ui.render</code>.</li>
+<li><b>Un autre mod</b> placé au-dessus qui court-circuite le vôtre : le journal le signale (<code>bypassed by …</code>).</li>
+</ul>
+
+<h3>Afficher ses propres traces</h3>
+<p>Pas de <code>console.log</code> visible : utilisez <code>$.ui.log('valeur : ' + JSON.stringify(x))</code> pour une ligne dans la conversation, ou <code>$.ui.status(…)</code> pour une valeur qui change souvent. Retirez-les avant de publier.</p>
+
+<h3>Rechargement</h3>
+<ul>
+<li>Un enregistrement qui ne change pas le contenu d'un fichier ne recharge rien.</li>
+<li>Après un rechargement raté, la sauvegarde suivante réessaie.</li>
+<li>Un rechargement relance <code>register</code> puis <code>session.start</code> : les variables du module repartent de zéro, <code>$.state</code> et <code>$.store</code> restent.</li>
+<li>Pour un mod installé dont le marketplace est un dossier local, <code>/reload-plugins</code> relit ce dossier.</li>
+</ul>
+
+<!-- ============================================================ 14 -->
+<h2 id="c14"><span class="n">14</span>Publier et mettre à jour</h2>
+
+<h3>Le principe : un dépôt GitHub qui est un « marketplace »</h3>
+<p>Un marketplace est simplement un dépôt contenant <code>.claude-plugin/marketplace.json</code>, qui liste un ou plusieurs mods. Deux organisations possibles :</p>
+<div class="cols">
+<div>
+<h4>Un mod par dépôt</h4>
+<pre>mon-mod/                      <span class="c">← racine du dépôt</span>
+├─ .claude-plugin/
+│  ├─ plugin.json
+│  └─ marketplace.json
+├─ hooks/…
+└─ README.md</pre>
+<pre>{
+  <span class="s">"name"</span>: <span class="s">"mon-mod"</span>,
+  <span class="s">"owner"</span>: { <span class="s">"name"</span>: <span class="s">"Moi"</span> },
+  <span class="s">"plugins"</span>: [
+    { <span class="s">"name"</span>: <span class="s">"mon-mod"</span>, <span class="s">"source"</span>: <span class="s">"./"</span> }
+  ]
+}</pre>
+</div>
+<div>
+<h4>Plusieurs mods (comme teddy-mods)</h4>
+<pre>mes-mods/                     <span class="c">← racine du dépôt</span>
+├─ .claude-plugin/
+│  └─ marketplace.json
+├─ mod-a/   <span class="c">(.claude-plugin/, hooks/)</span>
+├─ mod-b/
+└─ README.md</pre>
+<pre>{
+  <span class="s">"name"</span>: <span class="s">"mes-mods"</span>,
+  <span class="s">"owner"</span>: { <span class="s">"name"</span>: <span class="s">"Moi"</span> },
+  <span class="s">"plugins"</span>: [
+    { <span class="s">"name"</span>: <span class="s">"mod-a"</span>, <span class="s">"source"</span>: <span class="s">"./mod-a"</span>,
+      <span class="s">"description"</span>: <span class="s">"…"</span> },
+    { <span class="s">"name"</span>: <span class="s">"mod-b"</span>, <span class="s">"source"</span>: <span class="s">"./mod-b"</span> }
+  ]
+}</pre>
+</div>
+</div>
+
+<h3>Avant de publier</h3>
+<ol>
+<li><code>claude plugin validate</code> et <code>claude plugin test</code> passent.</li>
+<li><b>Aucun secret</b> dans les fichiers : clé d'API, jeton, adresse interne, données personnelles. Relisez tout, fichiers cachés compris.</li>
+<li>Le dossier <code>.claude-plugin/types/</code> est exclu (il a son propre <code>.gitignore</code>) ; ajoutez au <code>.gitignore</code> les fichiers de votre éditeur et les journaux.</li>
+<li>Choisissez la visibilité : <b>public</b> (tout le monde peut lire le code et installer le mod) ou <b>privé</b> (seules les personnes invitées sur GitHub, qui doivent aussi avoir configuré GitHub sur leur machine).</li>
+<li>Un <code>README.md</code> qui explique ce que fait le mod, avec une capture d'écran et les lignes d'installation ci-dessous.</li>
+</ol>
+
+<h3>Installer un mod publié</h3>
+<p><b>Dans une session Claude Code (terminal)</b> :</p>
+<pre class="sh">/plugin install mon-mod --marketplace compte/depot</pre>
+<p>Claude Code demande d'ajouter le marketplace (<code>y</code>), puis la portée (utilisateur par défaut), puis les réglages éventuels. Le mod est actif aussitôt.</p>
+<p><b>Depuis un shell</b> :</p>
+<pre class="sh">claude plugin install mon-mod --marketplace compte/depot</pre>
+<p><b>Dans l'application de bureau</b> (où <code>/plugin</code> n'existe pas) : bouton <b>+</b> à côté de la zone de saisie › <b>Plugins</b> › <b>Add marketplace</b> (<code>compte/depot</code>) › <b>Add plugin</b>.</p>
+<div class="box info"><b>Dépôt privé.</b> L'installation ne demande jamais d'identifiants : la machine doit déjà avoir accès à GitHub (clé SSH, ou <code>gh auth login</code> puis <code>gh auth setup-git</code>).</div>
+
+<h3>Publier une nouvelle version</h3>
+<ol>
+<li>Modifiez le mod et <b>augmentez <code>version</code></b> dans son <code>plugin.json</code> (<code>0.2.1</code> → <code>0.2.2</code>). Sans cela, la mise à jour ne voit aucun changement.</li>
+<li>Validez, testez, commitez, poussez.</li>
+<li>Chez chaque utilisateur :
+<pre class="sh">claude plugin marketplace update depot
+claude plugin update mon-mod@depot</pre>
+puis redémarrer l'application (ou <code>/reload-plugins</code> dans une session).</li>
+</ol>
+
+<h3>Où les mods sont installés</h3>
+<p>Les mods s'installent <b>machine par machine</b>, dans le dossier <code>~/.claude</code> de l'utilisateur. Une session lancée par SSH sur un serveur lit le <code>~/.claude</code> <i>du serveur</i> : il faut y installer les mods aussi. Un mod installé au niveau utilisateur depuis un terminal se charge aussi dans les sessions locales de l'application de bureau.</p>
+
+<!-- ============================================================ 15 -->
+<h2 id="c15"><span class="n">15</span>Pièges et bonnes pratiques</h2>
+
+<p>Ces conseils viennent de l'écriture des quatre mods du dépôt teddy-mods.</p>
+
+<h3>Conception</h3>
+<ul>
+<li><b>Commencez petit.</b> Un toast d'abord, puis une bande texte, puis la version graphique. Validez à chaque étape.</li>
+<li><b>Pensez terminal.</b> Prévoyez toujours une version texte : certains utilisateurs ne verront jamais votre SVG.</li>
+<li><b>Ne volez pas la place.</b> Une bande doit tenir sur une ou deux lignes ; un panneau ne s'ouvre de lui-même que là où il se place à côté de la conversation (<code>e.viewport.isFullscreen</code>, ou la <code>presentation</code> de <code>command.run</code>).</li>
+<li><b>Restez discret.</b> Un toast à chaque tour devient vite pénible : ajoutez un seuil (turn-alert ne prévient qu'au-delà de 60 s) et des réglages pour couper son et notification.</li>
+</ul>
+
+<h3>Dessin</h3>
+<ul>
+<li><b>Largeur d'un panneau</b> : <code>e.props.bodyColumns</code> la donne en colonnes de texte. Sur le bureau, une colonne vaut environ 7 px : utile pour dimensionner un SVG.</li>
+<li><b>Cartes SVG</b> : elles sont affichées comme des images. Le texte n'y revient pas à la ligne tout seul (découpez en <code>&lt;tspan&gt;</code>). Préfixez les <code>id</code> (dégradés, motifs) avec le nom du mod, sinon deux cartes se mélangent.</li>
+<li><b>Thème clair et sombre</b> : dans un SVG, définissez les couleurs par des variables CSS et redéfinissez-les sous <code>@media (prefers-color-scheme: light)</code> : la carte suit alors le thème de l'application. Proposez un réglage <code>auto / sombre / clair</code>.</li>
+<li><b>Boutons</b> : une <code>key</code> unique et stable pour chacun.</li>
+</ul>
+
+<h3>Données</h3>
+<ul>
+<li><b>Début de session</b> : <code>$.session.usage()</code> est vide avant la première réponse. Enregistrez la dernière mesure dans <code>$.store</code> et affichez-la (en le signalant : « dernière mesure ») en attendant.</li>
+<li><b>Le stockage dépend du mode d'installation.</b> Un mod chargé depuis son dossier et le même mod installé depuis un marketplace n'ont pas le même <code>$.store</code> : passer de l'un à l'autre repart de zéro.</li>
+<li><b>Rien d'important dans les variables du module</b> : elles disparaissent à chaque rechargement.</li>
+<li><b>Changez l'étiquette <code>shape</code></b> quand la forme d'une valeur de <code>$.state</code> change.</li>
+</ul>
+
+<h3>Système</h3>
+<ul>
+<li><b>Son sous Windows</b> : <code>$.audio.play</code> peut ne trouver aucun lecteur. turn-alert fabrique un WAV en mémoire et le joue avec PowerShell (<code>$.process.run</code> + <code>System.Media.SoundPlayer</code>), avec <code>$.audio.play</code> en secours.</li>
+<li><b>Un mod, une source.</b> Ne le chargez pas à la fois par <code>CLAUDE_CODE_PLUGIN_DIRS</code> et par un marketplace : il s'exécuterait deux fois (deux bandes, deux toasts).</li>
+<li><b>Application de bureau sous Windows (MSIX)</b> : son dossier de données réel est sous <code>AppData\Local\Packages\Claude_…\LocalCache\Roaming\Claude</code>, pas directement sous <code>AppData\Roaming</code>.</li>
+</ul>
+
+<h3>Sécurité</h3>
+<ul>
+<li><b>Un garde-fou a toujours un <code>.catch</code></b> qui refuse en cas d'erreur.</li>
+<li><b>Chemins</b> : pour autoriser seulement un dossier, comparez le chemin réel (<code>$.fs.stat(chemin, { resolve: true })</code> donne <code>realPath</code>, liens résolus) à une liste blanche. Une liste noire de noms est contournable.</li>
+<li><b>Commandes</b> : passez toujours les arguments séparément dans <code>argv</code>, jamais une chaîne construite à la main.</li>
+<li><b>Ne publiez jamais de secret</b>, même dans un fichier de test.</li>
+</ul>
+
+<h3>Versions</h3>
+<ul>
+<li>Augmentez <code>version</code> à chaque publication.</li>
+<li>L'API étant en accès anticipé, relisez les types après une mise à jour de Claude Code et relancez <code>validate</code> et <code>test</code>.</li>
+</ul>
+
+<!-- ============================================================ 16 -->
+<h2 id="c16"><span class="n">16</span>Aide-mémoire et références</h2>
+
+<h3>Les commandes</h3>
+<table>
+<tr><th>Commande</th><th>Rôle</th></tr>
+<tr><td><code>claude plugin validate &lt;dossier&gt;</code></td><td>vérifier manifeste, code et marketplace</td></tr>
+<tr><td><code>claude plugin test &lt;dossier&gt;</code></td><td>lancer les tests du mod</td></tr>
+<tr><td><code>claude --plugin-dir &lt;dossier&gt;</code></td><td>session avec le mod chargé depuis son dossier</td></tr>
+<tr><td><code>claude --debug</code></td><td>journal détaillé</td></tr>
+<tr><td><code>claude plugin install &lt;mod&gt; --marketplace &lt;compte/depot&gt;</code></td><td>installer</td></tr>
+<tr><td><code>claude plugin marketplace update &lt;depot&gt;</code></td><td>relire un marketplace</td></tr>
+<tr><td><code>claude plugin update &lt;mod&gt;@&lt;depot&gt;</code></td><td>mettre à jour un mod</td></tr>
+<tr><td><code>claude plugin list</code></td><td>mods installés et leur origine</td></tr>
+<tr><td><code>/reload-plugins</code></td><td>recharger les plugins dans une session</td></tr>
+<tr><td><code>/config</code></td><td>changer les réglages des mods</td></tr>
+</table>
+
+<h3>Les réponses d'un hook</h3>
+<table>
+<tr><th>Je veux…</th><th>J'écris…</th></tr>
+<tr><td>laisser faire</td><td><code>return next(e)</code></td></tr>
+<tr><td>modifier l'entrée</td><td><code>return next({ ...e, champ: valeur })</code></td></tr>
+<tr><td>agir après</td><td><code>const r = await next(e); … ; return r</code></td></tr>
+<tr><td>bloquer un outil</td><td><code>return { deny: 'raison' }</code></td></tr>
+<tr><td>répondre à mon outil</td><td><code>return { result: … }</code></td></tr>
+<tr><td>répondre à ma commande</td><td><code>return { text: '…' }</code></td></tr>
+<tr><td>dessiner</td><td><code>return &lt;Box&gt;…&lt;/Box&gt;</code></td></tr>
+<tr><td>protéger un garde-fou</td><td><code>on(…).catch(($, e, next) =&gt; next.called ? next(e) : { deny: '…' })</code></td></tr>
+</table>
+
+<h3>Les noms de <code>$</code> les plus utiles</h3>
+<table>
+<tr><th>Nom</th><th>Contenu</th></tr>
+<tr><td><code>$.ui</code></td><td><code>resolve</code>, <code>toast</code>, <code>status</code>, <code>notify</code>, <code>log</code>, <code>open</code>, <code>invalidate</code>, <code>copy</code>, <code>focus</code>, <code>view</code>, <code>selection</code></td></tr>
+<tr><td><code>$.session</code></td><td><code>usage</code>, <code>root</code>, <code>version</code>, <code>messages</code>, <code>append</code>, <code>surfaces</code></td></tr>
+<tr><td><code>$.state</code> / <code>$.store</code></td><td>état de session / mémoire permanente</td></tr>
+<tr><td><code>$.tool</code>, <code>$.command</code>, <code>$.agent</code></td><td>déclarer et appeler outils, commandes, sous-agents</td></tr>
+<tr><td><code>$.prompt</code></td><td><code>submit</code>, <code>fill</code>, <code>read</code>, <code>paint</code> (la zone de saisie)</td></tr>
+<tr><td><code>$.model</code></td><td><code>complete</code>, <code>fork</code></td></tr>
+<tr><td><code>$.clock</code></td><td><code>now</code>, <code>sleep</code>, <code>after</code>, <code>every</code></td></tr>
+<tr><td><code>$.fs</code>, <code>$.process</code>, <code>$.http</code>, <code>$.audio</code></td><td>fichiers, commandes, réseau, son</td></tr>
+<tr><td><code>$.plugin</code></td><td>informations sur votre mod (<code>name</code>…)</td></tr>
+</table>
+
+<h3>Glossaire</h3>
+<dl>
+<dt>Moteur</dt><dd>le cœur de Claude Code, commun au terminal, au bureau, à VS Code et au mobile.</dd>
+<dt>Événement</dt><dd>un moment où le moteur demande l'avis des mods (<code>tool.call</code>, <code>ui.render</code>…).</dd>
+<dt>Hook</dt><dd>une fonction <code>($, e, next)</code> accrochée à un événement.</dd>
+<dt>Chaîne</dt><dd>la suite des hooks de tous les mods pour un même événement, terminée par le moteur.</dd>
+<dt>Filtre (matcher)</dt><dd>le deuxième argument de <code>on</code>, qui restreint le hook à certains cas.</dd>
+<dt>Surface</dt><dd>là où l'on dessine : <code>terminal</code>, <code>desktop</code>, <code>vscode</code>, <code>mobile</code>.</dd>
+<dt>Composant</dt><dd>une zone dessinable : <code>AbovePrompt</code> (bande), <code>Pane</code> (panneau), lignes de conversation…</dd>
+<dt>Marketplace</dt><dd>un dépôt (ou dossier) qui liste des plugins installables.</dd>
+<dt>Contrat de types</dt><dd>le fichier <code>types/index.d.ts</code> qui déclare les valeurs <code>$.state</code> d'un mod.</dd>
+</dl>
+
+<h3>La référence qui fait foi</h3>
+<div class="box tip"><b>Le fichier de types.</b> Après le premier chargement d'un mod depuis son dossier, ouvrez <code>.claude-plugin/types/claude-code/index.d.ts</code>. Cherchez le nom d'un événement entre apostrophes (<code>'tool.call'</code>), d'un élément (<code>Pane: {</code>) ou d'un type (<code>ToolCallResult</code>) : vous y trouverez ses entrées, ses résultats, sa documentation et un exemple. Ce fichier correspond exactement à <i>votre</i> version de Claude Code ; ce guide, lui, peut vieillir.</div>
+<ul>
+<li><b>Le skill <code>plugin-authoring</code></b> de Claude Code : demandez à Claude de faire ou de corriger un mod, il le charge avec ses exemples complets (bande, panneau, garde-fou, tests).</li>
+<li><b>Le dépôt <a href="https://github.com/Teddy57600/teddy-mods">Teddy57600/teddy-mods</a></b> : quatre mods réels et testés, à lire comme exemples (bande SVG avec thème, panneau qui s'adapte à la largeur, alerte sonore, tests).</li>
+<li><b>Le guide de deux pages</b> (<code>docs/guide-mods-claude-code.pdf</code>) : l'essentiel, pour ceux qui connaissent déjà le système.</li>
+</ul>
+
+<p class="foot">Guide complet des mods Claude Code — rédigé à partir de Claude Code 2.1.317, de sa référence pour les auteurs de mods et des mods du dépôt Teddy57600/teddy-mods. Novembre 2026. L'API est en accès anticipé et peut évoluer.</p>
+
+</body>
+</html>
