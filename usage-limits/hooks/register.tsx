@@ -167,10 +167,11 @@ const dotOf = (percent: number | undefined): string => {
   return A.HUE.red
 }
 
-// Style « anneaux » : un anneau par fenêtre (cyan pour 5 h, violet pour 7 j, rouge à 100 %).
+// Style « anneaux », en bande compacte de la hauteur du style classique : un anneau par
+// fenêtre (cyan pour 5 h, violet pour 7 j, rouge à 100 %).
 const cardAnneaux = (session: Window, week: Window, stale: boolean, theme: Theme): string => {
   const W = 1100
-  const H = 112
+  const H = A.BAND_H
   const cy = H / 2
   const worst = [session.limit?.percentUsed, week.limit?.percentUsed].filter((n): n is number => n !== undefined)
   const peak = worst.length ? Math.max(...worst) : undefined
@@ -180,16 +181,16 @@ const cardAnneaux = (session: Window, week: Window, stale: boolean, theme: Theme
     const p = w.limit?.percentUsed
     // « jeu. 12/11 05h00 » devient « jeu. 12/11 · 05h00 ».
     const reset = resetTime(w.limit?.resetsAt, w.withDay).replace(/ (\d\dh\d\d)$/, ' · $1')
-    return A.ring(cx, cy, 38, p, p === undefined ? '—' : `${pct(p)}%`, p !== undefined && p >= 100 ? A.HUE.red : hue) +
-      A.info(cx + 62, cy, title, sub, reset || '—')
+    return A.bandRing(cx, cy, p, p === undefined ? '—' : `${pct(p)}%`, p !== undefined && p >= 100 ? A.HUE.red : hue) +
+      A.bandInfo(cx + 32, cy, title, sub, reset || '—')
   }
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
 <style>${A.palette(theme)}</style>
 ${A.frame(W, H, 'ul-ring')}
-${A.header(28, cy, stale ? 'DERNIÈRE MESURE' : 'UTILISATION', level(peak).label, dotOf(peak))}
-${block(330, session, 'Session', 'Fenêtre de 5 h', A.HUE.cyan)}
-${block(615, week, 'Semaine', 'Fenêtre de 7 j', A.HUE.purple)}
-${A.account(W - 28, cy, BRAND, lit)}
+${A.bandHeader(18, cy, stale ? 'DERNIÈRE MESURE' : 'UTILISATION', level(peak).label, dotOf(peak))}
+${block(290, session, 'Session', 'Fenêtre de 5 h', A.HUE.cyan)}
+${block(590, week, 'Semaine', 'Fenêtre de 7 j', A.HUE.purple)}
+${A.bandAccount(W - 20, cy, BRAND, lit)}
 </svg>`
 }
 

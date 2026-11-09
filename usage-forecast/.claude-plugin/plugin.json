@@ -1,6 +1,6 @@
 {
   "name": "usage-forecast",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Prévoit dans un panneau latéral où en sera la limite des 7 jours à sa remise à zéro",
   "userConfig": {
     "theme": {

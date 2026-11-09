@@ -170,7 +170,7 @@ const dotOf = (percent: number | undefined): string => {
 // Style « anneaux » : un anneau pour la place occupée, un pour la place encore libre.
 const cardAnneaux = (percent: number | undefined, tokens: number | undefined, window: number, theme: Theme): string => {
   const W = 1100
-  const H = 112
+  const H = A.BAND_H
   const cy = H / 2
   const f = forecast(percent)
   const p = percent === undefined ? undefined : Math.max(0, Math.min(100, percent))
@@ -181,12 +181,12 @@ const cardAnneaux = (percent: number | undefined, tokens: number | undefined, wi
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
 <style>${A.palette(theme)}</style>
 ${A.frame(W, H, 'cw-ring')}
-${A.header(28, cy, 'CONTEXTE', f.label, dotOf(percent))}
-${A.ring(330, cy, 38, p, p === undefined ? '—' : `${percent}%`, used)}
-${A.info(392, cy, 'Occupé', `Fenêtre de ${kilo(window)} jetons`, tokens === undefined ? 'en attente' : `${kilo(tokens)} jetons`, 'tokens')}
-${A.ring(615, cy, 38, free, free === undefined ? '—' : `${free}%`, A.HUE.purple)}
-${A.info(677, cy, 'Disponible', 'Place encore libre', tokens === undefined ? '—' : `${kilo(Math.max(0, window - tokens))} jetons`, 'tokens')}
-${A.account(W - 28, cy, BRAND, lit)}
+${A.bandHeader(18, cy, 'CONTEXTE', f.label, dotOf(percent))}
+${A.bandRing(290, cy, p, p === undefined ? '—' : `${percent}%`, used)}
+${A.bandInfo(322, cy, 'Occupé', `Fenêtre de ${kilo(window)} jetons`, tokens === undefined ? 'en attente' : `${kilo(tokens)} jetons`, 'tokens')}
+${A.bandRing(590, cy, free, free === undefined ? '—' : `${free}%`, A.HUE.purple)}
+${A.bandInfo(622, cy, 'Disponible', 'Place encore libre', tokens === undefined ? '—' : `${kilo(Math.max(0, window - tokens))} jetons`, 'tokens')}
+${A.bandAccount(W - 20, cy, BRAND, lit)}
 </svg>`
 }
 
