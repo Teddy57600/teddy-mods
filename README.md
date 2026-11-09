@@ -1,21 +1,114 @@
-# teddy-mods
+<p align="center">
+  <img src="docs/logo.svg" alt="Logo teddy-mods" width="112">
+</p>
 
-Quatre mods Claude Code :
+<h1 align="center">teddy-mods</h1>
 
-- **context-weather** : la « météo » du contexte, c'est-à-dire le remplissage de la fenêtre de contexte (de Grand soleil à Orage).
-- **usage-limits** : les limites d'usage sur 5 heures et sur 7 jours, avec leur heure de réinitialisation.
-- **usage-forecast** : la prévision de la limite des 7 jours (rythme, pourcentage prévu au reset, marge), dans un panneau latéral.
-- **turn-alert** : un toast, un son et une notification quand un tour long de Claude se termine.
+<p align="center">
+  <b>Des cartes vivantes pour Claude Code</b> : la météo du contexte, les limites d'usage,<br>
+  la prévision de la semaine et une alerte quand Claude a fini.
+</p>
 
-`context-weather` et `usage-limits` ajoutent une bande au-dessus de la zone de prompt. `usage-forecast` ouvre un panneau à droite de la conversation, pour ne pas prendre de place en dessous. Sur l'application desktop, chaque bande et le panneau sont des cartes graphiques. Dans le terminal, ce sont des lignes de texte. Les mods ne dépendent pas du compte : ils affichent les limites du compte connecté.
+<p align="center">
+  <img src="https://img.shields.io/badge/Claude%20Code-mods-A066F2?style=for-the-badge" alt="Mods Claude Code">
+  <img src="https://img.shields.io/badge/TypeScript-JSX-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript et JSX">
+  <img src="https://img.shields.io/badge/desktop%20%C2%B7%20terminal%20%C2%B7%20VS%20Code-surfaces-16C8DA?style=for-the-badge" alt="Desktop, terminal et VS Code">
+  <img src="https://img.shields.io/badge/th%C3%A8mes-clair%20%C2%B7%20sombre-22C08A?style=for-the-badge" alt="Thèmes clair et sombre">
+  <img src="https://img.shields.io/badge/mods-4-F29B38?style=for-the-badge" alt="4 mods">
+</p>
 
-Pour créer vos propres mods sans connaître le système, voir le **guide complet** [docs/guide-complet-mods-claude-code.pdf](docs/guide-complet-mods-claude-code.pdf) (source [.html](docs/guide-complet-mods-claude-code.html)) : installation, premier mod pas à pas, événements, affichage, données, réglages, tests, débogage, publication, pièges et aide-mémoire.
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/captures/bandes-anneaux-sombre.png">
+    <img src="docs/captures/bandes-anneaux-clair.png" alt="Les bandes usage-limits et context-weather en style anneaux, au-dessus de la zone de prompt" width="900">
+  </picture>
+</p>
 
-Pour l'essentiel en bref, voir le guide de deux pages [docs/guide-mods-claude-code.pdf](docs/guide-mods-claude-code.pdf) : ce qu'un mod peut faire, où il agit à l'écran, comment l'écrire, le tester et le partager. Sa source modifiable est [docs/guide-mods-claude-code.html](docs/guide-mods-claude-code.html) (impression en PDF depuis un navigateur, format A4).
+<p align="center">
+  <a href="#installation"><b>Installer</b></a> ·
+  <a href="#aperçu"><b>Voir les captures</b></a> ·
+  <a href="#créer-vos-propres-mods"><b>Créer un mod</b></a>
+</p>
+
+---
+
+## Table des matières
+
+- [Les mods](#les-mods)
+- [Aperçu](#aperçu)
+- [Installation](#installation)
+  - [Méthode A : marketplace GitHub (recommandée)](#méthode-a--marketplace-github-recommandée)
+  - [Méthode B : chargement direct des dossiers (développement)](#méthode-b--chargement-direct-des-dossiers-développement)
+  - [Session distante (SSH) ou nouvel environnement](#session-distante-ssh-ou-nouvel-environnement)
+  - [Mise à jour automatique (Linux, macOS, SSH)](#mise-à-jour-automatique-linux-macos-ssh)
+- [Thème](#thème)
+- [Style](#style)
+- [Prévision hebdo (usage-forecast)](#prévision-hebdo-usage-forecast)
+- [Réglages de turn-alert](#réglages-de-turn-alert)
+- [Personnalisation](#personnalisation)
+- [Créer vos propres mods](#créer-vos-propres-mods)
+- [Remarques](#remarques)
+
+## Les mods
+
+| Mod | Où | Ce qu'il montre |
+| --- | --- | --- |
+| **context-weather** | bande au-dessus du prompt | la « météo » du contexte : le remplissage de la fenêtre de contexte, de Grand soleil à Orage |
+| **usage-limits** | bande au-dessus du prompt | les limites d'usage sur 5 heures et sur 7 jours, avec leur heure de remise à zéro |
+| **usage-forecast** | panneau à droite de la conversation | la prévision de la limite des 7 jours : rythme, pourcentage prévu au reset, marge |
+| **turn-alert** | toast, son et notification | une alerte quand un tour long de Claude se termine |
+
+Sur l'application desktop, chaque bande et le panneau sont des cartes graphiques, en style `classique` ou `anneaux`, en thème clair ou sombre. Dans le terminal, ce sont des lignes de texte. Les mods ne dépendent pas du compte : ils affichent les limites du compte connecté.
+
+## Aperçu
+
+Captures produites à partir du code des mods, avec des mesures d'exemple.
+
+### Bandes au-dessus du prompt
+
+**Style `anneaux`**, en clair et en sombre :
+
+<img src="docs/captures/bandes-anneaux-clair.png" alt="Bandes en style anneaux, thème clair" width="900">
+
+<img src="docs/captures/bandes-anneaux-sombre.png" alt="Bandes en style anneaux, thème sombre" width="900">
+
+**Style `classique`** (par défaut), en sombre et en clair :
+
+<img src="docs/captures/bandes-classique-sombre.png" alt="Bandes en style classique, thème sombre" width="900">
+
+<img src="docs/captures/bandes-classique-clair.png" alt="Bandes en style classique, thème clair" width="900">
+
+### Panneau Prévision hebdo
+
+La carte prend la largeur du panneau : sur une ligne quand il est large, en fiche verticale quand il est étroit.
+
+<table>
+  <tr>
+    <th>Style <code>anneaux</code></th>
+    <th>Style <code>classique</code></th>
+  </tr>
+  <tr>
+    <td><img src="docs/captures/panneau-anneaux-large.png" alt="Panneau usage-forecast en style anneaux, large"></td>
+    <td><img src="docs/captures/panneau-classique-large.png" alt="Panneau usage-forecast en style classique, large"></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/captures/panneau-anneaux-etroit.png" alt="Panneau usage-forecast en style anneaux, étroit" width="260"></td>
+    <td align="center"><img src="docs/captures/panneau-classique-etroit.png" alt="Panneau usage-forecast en style classique, étroit" width="260"></td>
+  </tr>
+</table>
+
+### Dans le terminal
+
+Les mêmes informations, en texte :
+
+```text
+5 h █████░░░░░ 48% ↻ 18h30   7 j ██████░░░░ 56% ↻ jeu. 12/11 05h00
+Météo du contexte : Éclaircies ████████░░░░░░░░░░░░ 42% (420k/1M)
+```
 
 ## Installation
 
-Le dépôt est privé : le compte GitHub doit y avoir accès, et l'ordinateur doit déjà pouvoir se connecter à GitHub avec git (clé SSH, ou `gh auth login` puis `gh auth setup-git`). L'installation ne demande pas d'identifiants.
+Le dépôt est public : l'installation ne demande ni compte ni identifiants.
 
 ### Méthode A : marketplace GitHub (recommandée)
 
@@ -152,8 +245,6 @@ Les trois mêmes mods ont aussi un réglage `style` :
 - `classique` (par défaut) : la carte d'origine, à jauges horizontales.
 - `anneaux` : une carte épurée avec un logo en couches, une pastille d'état, des anneaux de progression et le compte à droite.
 
-![Style anneaux de usage-limits](docs/style-anneaux.png)
-
 En style `anneaux` :
 
 - **usage-limits** montre un anneau pour la session (5 h, cyan) et un pour la semaine (7 j, violet), avec leur heure de remise à zéro ;
@@ -202,6 +293,10 @@ Dans `hooks/register.tsx` des mods à carte (bandes et panneau) :
 - `SURFACE` : les couleurs fixes de la carte (fond, textes, jauges), en sombre et en clair.
 - `hooks/anneaux.ts` : les couleurs (`HUE`, `SURFACE`) et les éléments du style `anneaux`. Ce fichier est identique dans les trois mods : le modifier partout à la fois.
 
+## Créer vos propres mods
+
+- **[Guide complet](docs/guide-complet-mods-claude-code.pdf)** (32 pages, source [.html](docs/guide-complet-mods-claude-code.html)) : pour un développeur qui ne connaît pas encore le système. Installation, premier mod pas à pas, événements, affichage, données, réglages, tests, débogage, publication, pièges et aide-mémoire.
+- **[Guide de deux pages](docs/guide-mods-claude-code.pdf)** (source [.html](docs/guide-mods-claude-code.html)) : l'essentiel en bref, pour qui connaît déjà le système.
 ## Remarques
 
 - `usage-limits` se met à jour à chaque mesure du moteur (après chaque réponse, et dès qu'une fenêtre bouge d'un point). Au début d'une session, avant la première réponse, il reprend la dernière mesure connue, marquée « Dernière mesure », tant que la fenêtre n'est pas réinitialisée. Il reste vide sans abonnement Claude (clé API, passerelle d'entreprise).
