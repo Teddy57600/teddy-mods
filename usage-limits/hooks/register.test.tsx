@@ -45,3 +45,32 @@ test('sur le desktop, la bande est une carte SVG', async ($, on) => {
   expect(await ui.find({ type: 'Svg' })).toBeDefined()
   await ui.unmount()
 })
+
+test('avec le style anneaux, la carte montre un anneau par fenêtre', { options: { style: 'anneaux' } }, async ($, on) => {
+  on('session.usage', () => usage)
+  on('ui.render', ($, e) => {
+    const { Text } = $.ui.resolve(e)
+    return <Text>moteur</Text>
+  })
+
+  const ui = await $.ui.mount({ ...BAND, surface: 'desktop' })
+  const drawn = JSON.stringify(await ui.drawn())
+
+  expect(drawn).toContain('UTILISATION')
+  expect(drawn).toContain('Fenêtre de 5 h')
+  expect(drawn).toContain('40%')
+  await ui.unmount()
+})
+
+test('par défaut, la carte garde le style classique', async ($, on) => {
+  on('session.usage', () => usage)
+  on('ui.render', ($, e) => {
+    const { Text } = $.ui.resolve(e)
+    return <Text>moteur</Text>
+  })
+
+  const ui = await $.ui.mount({ ...BAND, surface: 'desktop' })
+
+  expect(JSON.stringify(await ui.drawn())).toContain("LIMITES D'USAGE")
+  await ui.unmount()
+})

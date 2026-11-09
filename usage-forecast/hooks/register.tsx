@@ -1,5 +1,7 @@
 import type { EngineInterface, PluginOptions, Register, SessionRateLimit } from 'claude-code'
 
+import * as A from './anneaux'
+
 type Mode = 'sombre' | 'clair'
 type Theme = 'auto' | Mode
 type Tone = { accent: string; soft: string }
@@ -301,6 +303,71 @@ ${bars}
 </svg>`
 }
 
+// Style « anneaux » : la pastille suit le verdict, aux mêmes seuils que levelOf.
+const dotOf = (f: Forecast | undefined): string => {
+  if (f === undefined) return A.HUE.gray
+  if (f.used >= 100) return A.HUE.red
+  if (f.projected === undefined || f.projected < 50) return A.HUE.green
+  if (f.projected < 75) return A.HUE.cyan
+  if (f.projected < 90) return A.HUE.purple
+  if (f.projected < 100) return A.HUE.orange
+  return A.HUE.red
+}
+
+// Style « anneaux » : anneau de ce qui est utilisé, anneau de ce qui est prévu au reset,
+// puis les quatre valeurs et le verdict. Étroit : tout en colonne, le compte en bas.
+const cardAnneaux = (view: View, theme: Theme, W: number): string => {
+  const { f, l } = view
+  const isWide = W >= WIDE
+  const pad = isWide ? 20 : 16
+  const limitBefore = f?.limitAt !== undefined && f.limitAt < f.resetsAt
+  const left = f === undefined ? undefined : 100 - Math.min(100, f.projected ?? f.used)
+  const lit = left === undefined ? 0 : Math.max(left <= 0 ? 0 : 1, Math.ceil((left / 100) * 4))
+  const projected = f?.projected
+  const projHue = projected === undefined ? A.HUE.cyan : projected >= 100 ? A.HUE.red : projected >= 90 ? A.HUE.orange : A.HUE.cyan
+  const usedRing = (cx: number, cy: number): string =>
+    A.ring(cx, cy, 38, f?.used, f === undefined ? '—' : `${num(f.used)}%`, f !== undefined && f.used >= 100 ? A.HUE.red : A.HUE.purple) +
+    A.info(cx + 60, cy, 'Utilisé', 'Semaine de 7 j', f === undefined ? '—' : when(f.resetsAt).replace(/ (\d\dh\d\d)$/, ' · $1'))
+  const projRing = (cx: number, cy: number): string =>
+    A.ring(cx, cy, 38, projected, projected === undefined ? '—' : `${Math.round(projected)}%`, projHue) +
+    A.info(cx + 60, cy, 'Au reset', projected === undefined ? 'pas encore de recul' : 'au rythme actuel', f === undefined ? '—' : `dans ${view.resetIn}`)
+  const colW = (W - 2 * pad) / (isWide ? 4 : 2)
+  const statsY = isWide ? 216 : 302
+  const stats = [
+    ['Rythme', view.rate, view.rateSub, undefined],
+    ['Reset dans', view.resetIn, view.resetSub, undefined],
+    ['Marge', view.margin, view.marginSub, undefined],
+    ['Limite dans', view.limitIn, view.limitSub, limitBefore ? A.HUE.red : undefined],
+  ].map(([title, value, sub, color], i) =>
+    A.stat(pad + (isWide ? i : i % 2) * colW, statsY + (isWide ? 0 : Math.floor(i / 2) * 64), title!, value!, sub!, color),
+  ).join('')
+  const ruleTop = statsY - 20
+  const ruleBottom = statsY + (isWide ? 52 : 116)
+  const verdictY = ruleBottom + 24
+  const lines = wrap(view.verdict, Math.floor((W - 2 * pad - 18) / 6.6))
+  const verdict = `<circle cx="${pad + 5}" cy="${verdictY - 4.5}" r="5" fill="${dotOf(f)}"/>` +
+    `<text x="${pad + 18}" y="${verdictY}" ${A.FONT} font-size="13" font-weight="600" style="fill:${A.v('text')}">` +
+    lines.map((line, i) => `<tspan x="${pad + 18}" dy="${i === 0 ? 0 : 17}">${line}</tspan>`).join('') + `</text>`
+  const verdictEnd = verdictY + (lines.length - 1) * 17
+  const accountY = verdictEnd + 40
+  const H = isWide ? verdictEnd + 22 : accountY + 32
+  const title = view.stale ? 'DERNIÈRE MESURE' : 'PRÉVISION'
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+<style>${A.palette(theme)}</style>
+${A.frame(W, H, 'uf-ring')}
+${A.header(pad, 46, title, l.label, dotOf(f))}
+${isWide ? A.account(W - pad - 4, 46, BRAND, lit) : ''}
+${usedRing(pad + 42, 136)}
+${isWide ? projRing(Math.round(W / 2) + 42, 136) : projRing(pad + 42, 230)}
+${A.rule(pad, W - pad, ruleTop)}
+${stats}
+${A.rule(pad, W - pad, ruleBottom)}
+${verdict}
+${isWide ? '' : A.account(W - pad - 4, accountY, BRAND, lit)}
+</svg>`
+}
+
 // Les limites sont celles du compte, pas de la session : la dernière mesure reste
 // valable d'une session à l'autre, jusqu'à la réinitialisation de la semaine.
 const LAST = 'lastWeek'
@@ -313,6 +380,7 @@ const remembered = async ($: EngineInterface, now: number): Promise<SessionRateL
 
 export const register: Register = (on, options) => {
   const theme = themeOf(options)
+  const style = A.styleOf(options.style)
 
   on('session.start', async ($, e, next) => {
     await $.command.register({
@@ -355,7 +423,7 @@ export const register: Register = (on, options) => {
     // terminal connaît aussi `Svg` mais ne le dessine pas : on teste la surface.
     if (e.surface !== 'terminal' && 'Svg' in table) {
       const { Svg } = table
-      return <Svg source={card(view, theme, widthOf(e.props.bodyColumns))} alt={alt} />
+      return <Svg source={(style === 'anneaux' ? cardAnneaux : card)(view, theme, widthOf(e.props.bodyColumns))} alt={alt} />
     }
 
     // Terminal : quelques lignes de texte.

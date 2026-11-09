@@ -37,3 +37,33 @@ test('sur le desktop, la bande est une carte SVG', async ($, on) => {
   expect(await ui.find({ type: 'Svg' })).toBeDefined()
   await ui.unmount()
 })
+
+test('avec le style anneaux, la carte montre l’occupé et le disponible', { options: { style: 'anneaux' } }, async ($, on) => {
+  on('session.usage', () => usage)
+  on('ui.render', ($, e) => {
+    const { Text } = $.ui.resolve(e)
+    return <Text>moteur</Text>
+  })
+
+  const ui = await $.ui.mount({ ...BAND, surface: 'desktop' })
+  const drawn = JSON.stringify(await ui.drawn())
+
+  expect(drawn).toContain('CONTEXTE')
+  expect(drawn).toContain('18%')
+  expect(drawn).toContain('82%')
+  expect(drawn).toContain('164k jetons')
+  await ui.unmount()
+})
+
+test('par défaut, la carte garde le style classique', async ($, on) => {
+  on('session.usage', () => usage)
+  on('ui.render', ($, e) => {
+    const { Text } = $.ui.resolve(e)
+    return <Text>moteur</Text>
+  })
+
+  const ui = await $.ui.mount({ ...BAND, surface: 'desktop' })
+
+  expect(JSON.stringify(await ui.drawn())).toContain('MÉTÉO DU CONTEXTE')
+  await ui.unmount()
+})

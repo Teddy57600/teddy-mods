@@ -1,5 +1,7 @@
 import type { EngineInterface, PluginOptions, Register, SessionRateLimit } from 'claude-code'
 
+import * as A from './anneaux'
+
 type Mode = 'sombre' | 'clair'
 type Theme = 'auto' | Mode
 type Tone = { accent: string; soft: string }
@@ -155,6 +157,42 @@ ${bars}
 </svg>`
 }
 
+// Style « anneaux » : la pastille suit la limite la plus entamée.
+const dotOf = (percent: number | undefined): string => {
+  if (percent === undefined) return A.HUE.gray
+  if (percent < 25) return A.HUE.green
+  if (percent < 50) return A.HUE.cyan
+  if (percent < 70) return A.HUE.purple
+  if (percent < 100) return A.HUE.orange
+  return A.HUE.red
+}
+
+// Style « anneaux » : un anneau par fenêtre (cyan pour 5 h, violet pour 7 j, rouge à 100 %).
+const cardAnneaux = (session: Window, week: Window, stale: boolean, theme: Theme): string => {
+  const W = 1100
+  const H = 112
+  const cy = H / 2
+  const worst = [session.limit?.percentUsed, week.limit?.percentUsed].filter((n): n is number => n !== undefined)
+  const peak = worst.length ? Math.max(...worst) : undefined
+  // Signal : 4 barres, d'autant plus allumées qu'il reste de la marge.
+  const lit = peak === undefined ? 0 : Math.max(peak >= 100 ? 0 : 1, Math.ceil(((100 - Math.min(100, peak)) / 100) * 4))
+  const block = (cx: number, w: Window, title: string, sub: string, hue: string): string => {
+    const p = w.limit?.percentUsed
+    // « jeu. 12/11 05h00 » devient « jeu. 12/11 · 05h00 ».
+    const reset = resetTime(w.limit?.resetsAt, w.withDay).replace(/ (\d\dh\d\d)$/, ' · $1')
+    return A.ring(cx, cy, 38, p, p === undefined ? '—' : `${pct(p)}%`, p !== undefined && p >= 100 ? A.HUE.red : hue) +
+      A.info(cx + 62, cy, title, sub, reset || '—')
+  }
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+<style>${A.palette(theme)}</style>
+${A.frame(W, H, 'ul-ring')}
+${A.header(28, cy, stale ? 'DERNIÈRE MESURE' : 'UTILISATION', level(peak).label, dotOf(peak))}
+${block(330, session, 'Session', 'Fenêtre de 5 h', A.HUE.cyan)}
+${block(615, week, 'Semaine', 'Fenêtre de 7 j', A.HUE.purple)}
+${A.account(W - 28, cy, BRAND, lit)}
+</svg>`
+}
+
 // Les limites sont celles du compte, pas de la session : la dernière mesure reste
 // valable d'une session à l'autre, jusqu'à la réinitialisation de chaque fenêtre.
 const LAST = 'lastRateLimits'
@@ -168,6 +206,7 @@ const remembered = async ($: EngineInterface): Promise<SessionRateLimit[]> => {
 
 export const register: Register = (on, options) => {
   const theme = themeOf(options)
+  const style = A.styleOf(options.style)
 
   // Le moteur publie ici chaque nouvelle mesure : après une réponse, et dès qu'une
   // fenêtre bouge d'un point entier.
@@ -204,7 +243,7 @@ export const register: Register = (on, options) => {
       return (
         <Box flexDirection="column" gap="xs">
           {below}
-          <Svg source={card(session, week, stale, theme)} alt={alt} />
+          <Svg source={(style === 'anneaux' ? cardAnneaux : card)(session, week, stale, theme)} alt={alt} />
         </Box>
       )
     }

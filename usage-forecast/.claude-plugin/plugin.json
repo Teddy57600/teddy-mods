@@ -1,6 +1,6 @@
 {
   "name": "usage-forecast",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Prévoit dans un panneau latéral où en sera la limite des 7 jours à sa remise à zéro",
   "userConfig": {
     "theme": {
@@ -12,6 +12,16 @@
         "auto",
         "sombre",
         "clair"
+      ]
+    },
+    "style": {
+      "type": "string",
+      "title": "Style de la carte",
+      "description": "classique : la carte d'origine. anneaux : carte épurée à anneaux de progression. Le terminal garde son affichage texte.",
+      "default": "classique",
+      "options": [
+        "classique",
+        "anneaux"
       ]
     }
   }

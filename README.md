@@ -145,6 +145,29 @@ Le réglage se change dans le menu `/config` de Claude Code (une ligne par mod),
 
 Avec la méthode B, les clés sont les noms des mods, sans `@teddy-mods`. Dans le terminal, les bandes restent du texte qui suit déjà le thème du terminal.
 
+## Style
+
+Les trois mêmes mods ont aussi un réglage `style` :
+
+- `classique` (par défaut) : la carte d'origine, à jauges horizontales.
+- `anneaux` : une carte épurée avec un logo en couches, une pastille d'état, des anneaux de progression et le compte à droite.
+
+![Style anneaux de usage-limits](docs/style-anneaux.png)
+
+En style `anneaux` :
+
+- **usage-limits** montre un anneau pour la session (5 h, cyan) et un pour la semaine (7 j, violet), avec leur heure de remise à zéro ;
+- **context-weather** montre la part occupée et la part encore libre de la fenêtre de contexte, en jetons ;
+- **usage-forecast** montre l'utilisé et le prévu au reset, puis les quatre valeurs et le verdict.
+
+Un anneau passe au rouge à 100 % (orange puis rouge quand le contexte dépasse 70 % puis 85 %). Le réglage `theme` s'applique aussi : en `clair`, fond blanc ; en `sombre`, fond bleu nuit. Il se change dans `/config` ou dans `settings.json`, à côté de `theme` :
+
+```json
+"usage-limits@teddy-mods": { "options": { "theme": "auto", "style": "anneaux" } }
+```
+
+Le terminal garde son affichage texte quel que soit le style.
+
 ## Prévision hebdo (usage-forecast)
 
 Le panneau prolonge le rythme moyen de la semaine jusqu'à la remise à zéro de la limite des 7 jours :
@@ -177,6 +200,7 @@ Dans `hooks/register.tsx` des mods à carte (bandes et panneau) :
 - `BRAND` : le nom affiché à droite de la carte (`TeddyIA`).
 - `forecast` (context-weather), `level` (usage-limits) et `levelOf` (usage-forecast) : seuils, libellés et couleurs de chaque niveau, en sombre et en clair.
 - `SURFACE` : les couleurs fixes de la carte (fond, textes, jauges), en sombre et en clair.
+- `hooks/anneaux.ts` : les couleurs (`HUE`, `SURFACE`) et les éléments du style `anneaux`. Ce fichier est identique dans les trois mods : le modifier partout à la fois.
 
 ## Remarques
 

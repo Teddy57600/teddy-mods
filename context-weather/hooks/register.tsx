@@ -1,5 +1,7 @@
 import type { PluginOptions, Register } from 'claude-code'
 
+import * as A from './anneaux'
+
 type Mode = 'sombre' | 'clair'
 type Theme = 'auto' | Mode
 type Tone = { accent: string; soft: string }
@@ -155,8 +157,42 @@ ${bars}
 </svg>`
 }
 
+// Style « anneaux » : la pastille et l'anneau suivent le remplissage, aux mêmes seuils que la météo.
+const dotOf = (percent: number | undefined): string => {
+  if (percent === undefined) return A.HUE.gray
+  if (percent < 25) return A.HUE.green
+  if (percent < 50) return A.HUE.cyan
+  if (percent < 70) return A.HUE.purple
+  if (percent < 85) return A.HUE.orange
+  return A.HUE.red
+}
+
+// Style « anneaux » : un anneau pour la place occupée, un pour la place encore libre.
+const cardAnneaux = (percent: number | undefined, tokens: number | undefined, window: number, theme: Theme): string => {
+  const W = 1100
+  const H = 112
+  const cy = H / 2
+  const f = forecast(percent)
+  const p = percent === undefined ? undefined : Math.max(0, Math.min(100, percent))
+  const free = p === undefined ? undefined : 100 - p
+  const used = p === undefined ? A.HUE.cyan : p >= 85 ? A.HUE.red : p >= 70 ? A.HUE.orange : A.HUE.cyan
+  // Signal : 4 barres, d'autant plus allumées qu'il reste de la place.
+  const lit = free === undefined ? 0 : Math.max(1, Math.ceil((free / 100) * 4))
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+<style>${A.palette(theme)}</style>
+${A.frame(W, H, 'cw-ring')}
+${A.header(28, cy, 'CONTEXTE', f.label, dotOf(percent))}
+${A.ring(330, cy, 38, p, p === undefined ? '—' : `${percent}%`, used)}
+${A.info(392, cy, 'Occupé', `Fenêtre de ${kilo(window)} jetons`, tokens === undefined ? 'en attente' : `${kilo(tokens)} jetons`, 'tokens')}
+${A.ring(615, cy, 38, free, free === undefined ? '—' : `${free}%`, A.HUE.purple)}
+${A.info(677, cy, 'Disponible', 'Place encore libre', tokens === undefined ? '—' : `${kilo(Math.max(0, window - tokens))} jetons`, 'tokens')}
+${A.account(W - 28, cy, BRAND, lit)}
+</svg>`
+}
+
 export const register: Register = (on, options) => {
   const theme = themeOf(options)
+  const style = A.styleOf(options.style)
 
   // Redessine la bande dès qu'une réponse a fait évoluer le contexte.
   on('turn.complete', ($, e, next) => {
@@ -185,7 +221,7 @@ export const register: Register = (on, options) => {
       return (
         <Box flexDirection="column" gap="xs">
           {below}
-          <Svg source={card(context.percent, context.tokens, context.window, theme)} alt={alt} />
+          <Svg source={(style === 'anneaux' ? cardAnneaux : card)(context.percent, context.tokens, context.window, theme)} alt={alt} />
         </Box>
       )
     }

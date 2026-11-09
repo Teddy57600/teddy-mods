@@ -70,3 +70,17 @@ test('sur le desktop, le panneau est une carte SVG à sa largeur', async ($, on)
     await ui.unmount()
   }
 })
+
+test('avec le style anneaux, le panneau montre l’utilisé et le prévu, à sa largeur', { options: { style: 'anneaux' } }, async ($, on) => {
+  on('clock.now', () => ({ value: NOW }))
+  on('session.usage', () => usage([week(40, 80)]))
+
+  for (const [bodyColumns, width] of [[40, 300], [90, 640]] as const) {
+    const ui = await $.ui.mount({ ...PANE, props: { ...PANE.props, bodyColumns }, surface: 'desktop' })
+    const drawn = JSON.stringify(await ui.drawn())
+    expect(drawn).toContain(`width=\\"${width}\\"`)
+    expect(drawn).toContain('PRÉVISION')
+    expect(drawn).toContain('76%')
+    await ui.unmount()
+  }
+})
